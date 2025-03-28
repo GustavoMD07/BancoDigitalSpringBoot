@@ -1,11 +1,14 @@
 package br.com.cdb.bancodigitalJPA.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.cdb.bancodigitalJPA.DTO.ClienteDTO;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
 
@@ -23,15 +26,25 @@ public class ClienteService {
 
 	// aqui então você precisa validar os campos primeiro
 	// geralmente você usa o próprio Objeto, é uma boa prática:)
-	public Cliente addCliente(String nome, String cpf) {
+	public Cliente addCliente(ClienteDTO clienteDto) {
+		//pego a data de nascimento, depois pego a data de hoje e comparo
+		LocalDate dataNascimento = clienteDto.getDataNascimento();
+		LocalDate hoje = LocalDate.now();
+		
+		Integer idade = Period.between(dataNascimento, hoje).getYears();
+		
+		if (idade < 18) {
+			throw new IllegalArgumentException("O cliente deve ter 18 anos ou mais para criar a conta!");
+		}
+		
 		Cliente cliente = new Cliente();
-		cliente.setCpf(cpf);
-		cliente.setNome(nome);
+		cliente.setCpf(clienteDto.getCPF());
+		cliente.setNome(clienteDto.getNome());
+		cliente.setIdade(idade);
 		if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
 	        throw new IllegalArgumentException("Já existe um cliente com este CPF cadastrado.");
 	    }
-//		validarNome(nome);
-//		validarCPF(cpf);
+
 
 		return clienteRepository.save(cliente);
 		// esse .save é um método do próprio JPA, por isso ele facilita TANTO a vida do programador
@@ -78,31 +91,4 @@ public class ClienteService {
 		return clienteRepository.findById(id);
 	}
 	
-	private void validarNome(String nome) {
-		
-		if(nome == null || nome.isEmpty()) {
-			throw new IllegalArgumentException("O nome não pode estar vazio");
-		}
-		
-		if(nome.length() < 2 || nome.length() > 100) {
-			throw new IllegalArgumentException("O nome não pode ter menos de 2 ou mais de 100 letras!");
-		}
-		
-		if(!nome.matches("^[A-Za-zÀ-ÿ\\s]+$")) {
-			throw new IllegalArgumentException("O nome só deve conter letras ou espaços");
-		}
-	}
-	
-	private void validarCPF(String cpf) {
-		
-		if(cpf == null || cpf.isEmpty()) {
-			throw new IllegalArgumentException("O cpf não pode estar vazio");
-		}
-		//aqui eu faço o replace pra tirar algum ponto/traço/espaço
-		cpf = cpf.replaceAll("[^0-9]", "");
-		// esse "\\d" só aceita números :)
-		if(!cpf.matches("\\d{11}")) {
-			throw new IllegalArgumentException("O cpf deve conter exatamente 11 digitos!");
-		}
-	}
 }

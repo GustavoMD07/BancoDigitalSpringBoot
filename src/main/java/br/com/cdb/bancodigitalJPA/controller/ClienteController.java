@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cdb.bancodigitalJPA.DTO.ClienteDTO;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.service.ClienteService;
 import jakarta.validation.Valid;
@@ -29,19 +30,19 @@ public class ClienteController {
 	//esse ResponseEntity eu uso pra dar alguma resposta a quem fez a requisição
 	//é mais pra informar o que tá acontecendo
 	@PostMapping("/add")
-	public ResponseEntity<String> addCliente(@RequestBody @Valid Cliente cliente) {
+	public ResponseEntity<String> addCliente(@RequestBody @Valid ClienteDTO clienteDto) {
 		
 		
-		Cliente clienteAdicionado = clienteService.addCliente(cliente.getNome(), cliente.getCpf());
+		Cliente clienteAdicionado = clienteService.addCliente(clienteDto);
 		
 		if(clienteAdicionado != null) {
-			return new ResponseEntity<>("Cliente " + cliente.getNome() + " adicionado com sucesso",
+			return new ResponseEntity<>("Cliente " + clienteAdicionado.getNome() + " adicionado com sucesso",
 				HttpStatus.CREATED);
 			//esse HttpStatus são aqueles números tipo "404 - not found", "200 - ok", lembra do site dos gatos
 		}
 		
 		else {
-			return new ResponseEntity<>("Cliente " + cliente.getNome() + " não foi adicionado ao sistema, "
+			return new ResponseEntity<>("Cliente " + clienteAdicionado.getNome() + " não foi adicionado ao sistema, "
 			+ "nome ou CPF inválidos", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
