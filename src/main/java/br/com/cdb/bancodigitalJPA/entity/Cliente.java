@@ -31,6 +31,8 @@ public class Cliente {
 	@Pattern(regexp = "\\d{11}", message = "O CPF deve conter exatamente 11 digitos")
 	private String cpf;
 	
+	private String data;
+	
 	
 	
 	@NotBlank(message = "O nome não pode estar vazio.")

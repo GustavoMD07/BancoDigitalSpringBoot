@@ -12,7 +12,7 @@ public class ContaPoupanca extends Conta {
         // O Hibernate precisa de um construtor sem argumentos
     }
 
-    public Double getTaxaManutencao() {
+    public Double getTaxaRendimento() {
         return taxaRendimento;
     }
 

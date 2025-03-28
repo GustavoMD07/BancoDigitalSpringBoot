@@ -1,7 +1,9 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,7 +35,20 @@ public abstract class Conta {							//esse é o parâmetro pra diferenciar
 	private Cliente cliente;
 	//esse atributo eu mapeio ele no cliente, depois passo o nome dele no Cliente
 	
+	//ele pega a discriminatória com o name, e como ele é false pra insertable e update
+	@Column(name = "tipo_de_conta", insertable = false, updatable = false)
+	private String tipoDeConta;
 	
+	
+	@JsonProperty("tipoDeConta")		//JsonProperty garante que ele vá aparecer no PostMan
+	public String getTipoDeConta() {
+		return tipoDeConta;
+	} 									//se eu não tiver um getter, ele não aparece no PostMan
+
+	public void setTipoDeConta(String tipoDeConta) {
+		this.tipoDeConta = tipoDeConta;
+	}
+
 	public Long getId() {
 		return id;
 	}
