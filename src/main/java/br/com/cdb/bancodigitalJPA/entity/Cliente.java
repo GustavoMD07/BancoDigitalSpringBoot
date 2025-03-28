@@ -27,17 +27,10 @@ public class Cliente {
 	
 	//cpf tem que ser único
 	@Column(unique = true)
-	@NotBlank(message = "O cpf não pode estar vazio.")
-	@Pattern(regexp = "\\d{11}", message = "O CPF deve conter exatamente 11 digitos")
 	private String cpf;
 	
-	private String data;
+	private Integer idade;
 	
-	
-	
-	@NotBlank(message = "O nome não pode estar vazio.")
-	@Size(min = 2, max = 100, message = "O nome deve ter mais de duas letras e menos de 100!")
-	@Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]+$", message = "O nome deve conter apenas letras :)")
 	private String nome;
 	
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
@@ -79,5 +72,13 @@ public class Cliente {
 
 	public void setContas(List<Conta> contas) {
 		this.contas = contas;
+	}
+	
+	public Integer getIdade() {
+		return idade;
+	}
+
+	public void setIdade(Integer idade) {
+		this.idade = idade;
 	}
 }
