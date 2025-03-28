@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
+import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
+import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
+import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
 import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ContaService {
@@ -66,12 +70,13 @@ public class ContaService {
 		return buscarContaPorId(id).getSaldo();
 	}
 
+	@Transactional
 	public void transferir(Long origemid, Long destinoid, Double valor) {
 		Conta origem = buscarContaPorId(origemid);
 		Conta destino = buscarContaPorId(destinoid);
 
 		if (valor > origem.getSaldo()) {
-			throw new RuntimeException("Saldo insuficiente na conta de origem");
+			throw new SaldoInsuficienteException("Saldo insuficiente na conta de origem");
 		}
 
 		origem.setSaldo(origem.getSaldo() - valor);
@@ -80,28 +85,72 @@ public class ContaService {
 		contaRepository.save(origem);
 		contaRepository.save(destino); // atualizando as informações
 	}
-
+	//por que usar o @Transactional? 1- ele indica que o método vai ser tratado como transação
+	//se no meio do processo algo dá errado, por exemplo em saque, ele não modifica nada do saldo e retorna ao que era antes
+	
+	@Transactional
 	public void pix(Long id, Double valor) {
 		Conta conta = buscarContaPorId(id);
 		if (valor > conta.getSaldo()) {
-			throw new IllegalStateException("Saldo insuficiente");
+			throw new SaldoInsuficienteException("Saldo insuficiente para fazer o pix");
 		}
 		conta.setSaldo(conta.getSaldo() - valor);
 		contaRepository.save(conta);
 	}
 
+	@Transactional
 	public void deposito(Long id, Double valor) {
 		Conta conta = buscarContaPorId(id);
 		conta.setSaldo(conta.getSaldo() + valor);
 		contaRepository.save(conta);
 	}
 
+	@Transactional
 	public void saque(Long id, Double valor) {
 		Conta conta = buscarContaPorId(id);
 		if (valor > conta.getSaldo()) {
-			throw new IllegalStateException("Saldo insuficiente");
+			throw new SaldoInsuficienteException("Saldo insuficiente para saque");
 		}
 		conta.setSaldo(conta.getSaldo() - valor);
 		contaRepository.save(conta);
 	}
+	
+	@Transactional
+	public void aplicarTaxaManutencao(Long id) {
+		Conta conta = buscarContaPorId(id);
+		
+		if( conta instanceof ContaPoupanca) {
+			throw new RuntimeException("A taxa de manutenção só pode ser aplicada para contas correntes");
+		}
+		ContaCorrente contaC = (ContaCorrente) conta; //aqui eu faço o cast pra converter tipos de objeto
+		//se eu não faço o Cast, eu teria que instanciar a classe de novo, o que não é uma boa prática
+		double taxa = contaC.getTaxaManutencao();
+		
+		if(taxa > contaC.getSaldo()) {
+			throw new SaldoInsuficienteException("Saldo insuficiente para aplicar taxa");
+		}
+		
+		contaC.setSaldo(contaC.getSaldo() - taxa);
+		contaRepository.save(contaC);
+	}
+	
+	@Transactional
+	public void aplicarRendimento(Long id) {
+		Conta conta = buscarContaPorId(id);
+		
+		if(conta instanceof ContaCorrente) {
+			throw new RuntimeException("Rendimento só pode ser aplicado a contas poupanças");
+		}
+		
+		ContaPoupanca contaP = (ContaPoupanca) conta;
+		double taxa = contaP.getTaxaRendimento();
+		
+		if(conta.getSaldo() == 0) {
+			throw new SaldoInsuficienteException("Não é possível aplicar rendimento a um saldo nulo");
+		}
+		
+		contaP.setSaldo( contaP.getSaldo() *( 1 + taxa));
+		contaRepository.save(contaP);
+	}
+	
 }

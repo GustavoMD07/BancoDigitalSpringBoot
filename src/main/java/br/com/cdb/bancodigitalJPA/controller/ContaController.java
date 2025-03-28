@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -140,6 +141,18 @@ public class ContaController {
 	public ResponseEntity<String> saque(@PathVariable Long id, @RequestParam Double valor) {
 		contaService.saque(id, valor);
 		return new ResponseEntity<>("Saque de R$ " + valor + " realizado com sucesso", HttpStatus.ACCEPTED);
+	}
+	
+	@PutMapping("/manutencao/{id}")
+	public ResponseEntity<String> taxaManutencao(@PathVariable Long id) {
+		contaService.aplicarTaxaManutencao(id);
+		return new ResponseEntity<>("Taxa de manutenção aplicada", HttpStatus.OK);
+	}
+	
+	@PutMapping("/rendimento/{id}")
+	public ResponseEntity<String> taxaRendimento(@PathVariable Long id) {
+		contaService.aplicarRendimento(id);
+		return new ResponseEntity<>("Taxa de rendimento aplicada", HttpStatus.OK);
 	}
 		
 

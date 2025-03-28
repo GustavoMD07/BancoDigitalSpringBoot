@@ -34,7 +34,7 @@ public class ClienteService {
 		Integer idade = Period.between(dataNascimento, hoje).getYears();
 		
 		if (idade < 18) {
-			throw new IllegalArgumentException("O cliente deve ter 18 anos ou mais para criar a conta!");
+			throw new IllegalStateException("O cliente deve ter 18 anos ou mais para criar a conta!");
 		}
 		
 		Cliente cliente = new Cliente();
