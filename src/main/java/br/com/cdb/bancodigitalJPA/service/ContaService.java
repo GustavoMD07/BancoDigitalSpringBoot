@@ -10,7 +10,9 @@ import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
 import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
+import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
+import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
 import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
 import jakarta.transaction.Transactional;
@@ -31,7 +33,7 @@ public class ContaService {
 		Optional<Cliente> clienteEncontrado = clienteRepository.findById(conta.getCliente().getId());
 
 		if (clienteEncontrado.isEmpty()) {
-			throw new IllegalArgumentException("Cliente com o ID: " + conta.getCliente().getId() + " não encontrado!");
+			throw new ObjetoNuloException("Cliente com o ID: " + conta.getCliente().getId() + " não encontrado!");
 		}
 
 		Cliente cliente = clienteEncontrado.get();
@@ -39,7 +41,7 @@ public class ContaService {
 		if (cliente.getContas() != null && cliente.getContas().size() >= 2) {
 			throw new IllegalStateException("O cliente já possui duas contas");
 		}
-		
+
 		conta.setCliente(cliente);
 		return contaRepository.save(conta);
 	}
@@ -58,7 +60,7 @@ public class ContaService {
 		if (conta.isPresent()) {
 			return conta.get();
 		} else {
-			return null;
+			throw new ObjetoNuloException("Não foi encontrada a Conta com o ID " + id);
 		}
 	}
 
@@ -85,9 +87,11 @@ public class ContaService {
 		contaRepository.save(origem);
 		contaRepository.save(destino); // atualizando as informações
 	}
-	//por que usar o @Transactional? 1- ele indica que o método vai ser tratado como transação
-	//se no meio do processo algo dá errado, por exemplo em saque, ele não modifica nada do saldo e retorna ao que era antes
-	
+	// por que usar o @Transactional? 1- ele indica que o método vai ser tratado
+	// como transação
+	// se no meio do processo algo dá errado, por exemplo em saque, ele não modifica
+	// nada do saldo e retorna ao que era antes
+
 	@Transactional
 	public void pix(Long id, Double valor) {
 		Conta conta = buscarContaPorId(id);
@@ -114,43 +118,44 @@ public class ContaService {
 		conta.setSaldo(conta.getSaldo() - valor);
 		contaRepository.save(conta);
 	}
-	
+
 	@Transactional
 	public void aplicarTaxaManutencao(Long id) {
 		Conta conta = buscarContaPorId(id);
-		
-		if( conta instanceof ContaPoupanca) {
-			throw new RuntimeException("A taxa de manutenção só pode ser aplicada para contas correntes");
+
+		if (conta instanceof ContaPoupanca) {
+			throw new SubClasseDiferenteException("A taxa de manutenção só pode ser aplicada para contas correntes");
 		}
-		ContaCorrente contaC = (ContaCorrente) conta; //aqui eu faço o cast pra converter tipos de objeto
-		//se eu não faço o Cast, eu teria que instanciar a classe de novo, o que não é uma boa prática
+		ContaCorrente contaC = (ContaCorrente) conta; // aqui eu faço o cast pra converter tipos de objeto
+		// se eu não faço o Cast, eu teria que instanciar a classe de novo, o que não é
+		// uma boa prática
 		double taxa = contaC.getTaxaManutencao();
-		
-		if(taxa > contaC.getSaldo()) {
+
+		if (taxa > contaC.getSaldo()) {
 			throw new SaldoInsuficienteException("Saldo insuficiente para aplicar taxa");
 		}
-		
+
 		contaC.setSaldo(contaC.getSaldo() - taxa);
 		contaRepository.save(contaC);
 	}
-	
+
 	@Transactional
 	public void aplicarRendimento(Long id) {
 		Conta conta = buscarContaPorId(id);
-		
-		if(conta instanceof ContaCorrente) {
-			throw new RuntimeException("Rendimento só pode ser aplicado a contas poupanças");
+
+		if (conta instanceof ContaCorrente) {
+			throw new SubClasseDiferenteException("Rendimento só pode ser aplicado a contas poupanças");
 		}
-		
+
 		ContaPoupanca contaP = (ContaPoupanca) conta;
 		double taxa = contaP.getTaxaRendimento();
-		
-		if(conta.getSaldo() == 0) {
+
+		if (conta.getSaldo() == 0) {
 			throw new SaldoInsuficienteException("Não é possível aplicar rendimento a um saldo nulo");
 		}
-		
-		contaP.setSaldo( contaP.getSaldo() *( 1 + taxa));
+
+		contaP.setSaldo(contaP.getSaldo() * (1 + taxa));
 		contaRepository.save(contaP);
 	}
-	
+
 }

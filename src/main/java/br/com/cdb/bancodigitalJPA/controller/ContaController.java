@@ -44,17 +44,6 @@ public class ContaController {
 	@Autowired
 	private ClienteRepository clienteRepository;
 	
-//	@PostMapping("/add/{clienteId}")
-//	public ResponseEntity<String> addConta(@PathVariable Long clienteId, @RequestBody Conta conta) {
-//		Conta contaAdicionada = contaService.addConta(clienteId, conta);
-//		if(contaAdicionada != null) {
-//			return new ResponseEntity<>("Conta associada ao cliente de ID: " + clienteId
-//					+ " adicionada com sucesso!", HttpStatus.OK);
-//		}
-//		else {
-//			return new ResponseEntity<>("Não foi possível adicionar a conta", HttpStatus.CONFLICT);
-//		}
-//	}
 	
 	@PostMapping("/add")
 	public ResponseEntity<String> addConta(@RequestBody @Valid ContaDTO contaDto) {
