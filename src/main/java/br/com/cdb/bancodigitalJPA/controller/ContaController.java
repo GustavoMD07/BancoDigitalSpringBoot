@@ -23,6 +23,7 @@ import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
 import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
+import br.com.cdb.bancodigitalJPA.exception.ListaVaziaException;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
 import br.com.cdb.bancodigitalJPA.service.ContaService;
 import jakarta.validation.Valid;
@@ -109,6 +110,9 @@ public class ContaController {
 	@GetMapping("/listAll")
 	public ResponseEntity<List<Conta>> listarContas() {
 		List<Conta> contas = contaService.listarContas();
+		if(contas.isEmpty()) {
+			throw new ListaVaziaException("Não foram encontradas Contas");
+		}
 		return new ResponseEntity<List<Conta>>(contas, HttpStatus.OK);
 	}
 	

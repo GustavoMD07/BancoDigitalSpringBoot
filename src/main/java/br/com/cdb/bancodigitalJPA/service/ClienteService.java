@@ -15,6 +15,8 @@ import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.ClienteComum;
 import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
 import br.com.cdb.bancodigitalJPA.entity.ClienteSuper;
+import br.com.cdb.bancodigitalJPA.exception.CpfDuplicadoException;
+import br.com.cdb.bancodigitalJPA.exception.IdadeInsuficienteException;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
 
 @Service
@@ -39,7 +41,7 @@ public class ClienteService {
 		Integer idade = Period.between(dataNascimento, hoje).getYears();
 		
 		if (idade < 18) {
-			throw new IllegalStateException("O cliente deve ter 18 anos ou mais para criar a conta!");
+			throw new IdadeInsuficienteException("O cliente deve ter 18 anos ou mais para criar a conta!");
 		}
 		
 		Cliente cliente;
@@ -56,14 +58,14 @@ public class ClienteService {
 			cliente = new ClientePremium();
 		}
 		else {
-			throw new IllegalStateException("blablbal");
+			throw new IllegalStateException("Selecione o tipo de cliente");
 		}
 		
 		cliente.setCpf(clienteDto.getCPF());
 		cliente.setNome(clienteDto.getNome());
 		cliente.setIdade(idade);
 		if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
-	        throw new IllegalArgumentException("Já existe um cliente com este CPF cadastrado.");
+			throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
 	    }
 
 
@@ -96,13 +98,13 @@ public class ClienteService {
 			Optional<Cliente> clienteExistente = clienteRepository.findByCpf(clienteAtualizar.getCpf());
 			
 			if(clienteExistente.isPresent()) {
-				throw new IllegalArgumentException("Já há um cliente cadastrado nesse CPF");
+				throw new CpfDuplicadoException("Já há um cliente cadastrado nesse CPF");
 			}
 			
 			LocalDate hoje = LocalDate.now();
 			Integer idade = Period.between(dataNascimento, hoje).getYears();
 			if(idade < 18) {
-				throw new IllegalArgumentException("Apenas maiores de idade podem criar conta");
+				throw new IdadeInsuficienteException("Apenas maiores de idade podem criar conta");
 			}
 		
 			clienteAtualizar.setNome(nome);

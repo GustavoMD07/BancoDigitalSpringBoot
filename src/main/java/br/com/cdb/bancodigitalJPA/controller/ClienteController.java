@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitalJPA.DTO.ClienteDTO;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
+import br.com.cdb.bancodigitalJPA.exception.ListaVaziaException;
 import br.com.cdb.bancodigitalJPA.service.ClienteService;
 import jakarta.validation.Valid;
 
@@ -77,6 +78,9 @@ public class ClienteController {
 	@GetMapping("/listAll")
 	public ResponseEntity<List<Cliente>> listarClientes() {
 		List<Cliente> clientes = clienteService.getAllClientes();
+		if(clientes.isEmpty()) {
+			throw new ListaVaziaException("Não foram identificados clientes na lista");
+		}
 		return new ResponseEntity<List<Cliente>>(clientes, HttpStatus.OK);
 	}
 	
