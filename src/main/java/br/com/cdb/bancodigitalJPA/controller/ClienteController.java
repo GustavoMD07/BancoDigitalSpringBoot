@@ -36,13 +36,14 @@ public class ClienteController {
 		Cliente clienteAdicionado = clienteService.addCliente(clienteDto);
 		
 		if(clienteAdicionado != null) {
-			return new ResponseEntity<>("Cliente " + clienteAdicionado.getNome() + " adicionado com sucesso",
+			return new ResponseEntity<>("Cliente " + clienteAdicionado.getNome() + 
+			" do tipo: " + clienteDto.getTipoDeCliente() + "adicionado com sucesso",
 				HttpStatus.CREATED);
 			//esse HttpStatus são aqueles números tipo "404 - not found", "200 - ok", lembra do site dos gatos
 		}
 		
 		else {
-			return new ResponseEntity<>("Cliente " + " não foi adicionado ao sistema, "
+			return new ResponseEntity<>("Cliente não foi adicionado ao sistema, "
 			+ "nome ou CPF inválidos", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}

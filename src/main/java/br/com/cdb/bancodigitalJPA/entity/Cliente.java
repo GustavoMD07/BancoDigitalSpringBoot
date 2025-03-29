@@ -2,22 +2,28 @@ package br.com.cdb.bancodigitalJPA.entity;
 
 import java.util.List;
 
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
-@Entity // no entity mesmo, ele já cria a tabela no banco de dados (h2) ele já "Mapeia"
+
+//no entity mesmo, ele já cria a tabela no banco de dados (h2) ele já "Mapeia"
 //a gente pensa no Entity como se fosse a "interface" da tabela do nosso banco, é o que você guarda
-public class Cliente {
+
+@Entity 
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // esse Discriminator, indica qual é a subclasse
+@DiscriminatorColumn(name = "tipo_de_cliente") //de cada cliente
+public abstract class Cliente {
 
 	// gerando ID de forma icrementada
 	@Id
@@ -33,6 +39,11 @@ public class Cliente {
 	
 	private String nome;
 	
+	@Column(name = "tipo_de_cliente", insertable = false, updatable = false)
+	private String tipoDeCliente;
+	
+	
+
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
 	@JsonManagedReference
 	private List<Conta> contas;
@@ -80,5 +91,13 @@ public class Cliente {
 
 	public void setIdade(Integer idade) {
 		this.idade = idade;
+	}
+	
+	public String getTipoDeCliente() {
+		return tipoDeCliente;
+	}
+
+	public void setTipoDeCliente(String tipoDeCliente) {
+		this.tipoDeCliente = tipoDeCliente;
 	}
 }

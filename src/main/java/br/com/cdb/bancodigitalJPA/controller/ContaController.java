@@ -75,9 +75,7 @@ public class ContaController {
 		}
 		
 		conta.setSaldo(contaDto.getSaldo());
-		logger.info("Cliente encontrado com ID: {}", clienteProcurado.get().getId());
 		conta.setCliente(clienteProcurado.get());
-		logger.info("Cliente encontrado com ID: {}", clienteProcurado.get().getId());
 		Conta contaSalva = contaService.addConta(conta);
 		return new ResponseEntity<>("Conta "+ contaDto.getTipoDeConta() +" adicionada com sucesso", 
 				HttpStatus.CREATED);

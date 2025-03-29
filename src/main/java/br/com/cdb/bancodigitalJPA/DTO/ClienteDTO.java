@@ -27,24 +27,40 @@ public class ClienteDTO {
 	@NotNull(message = "A data de nascimento não pode estar vazia")
 	private LocalDate dataNascimento;
 	
+	@NotBlank(message = "Selecione um tipo de conta || Comum || Super || Premium")
+	private String tipoDeCliente;
+	
+	
 	
 	public String getNome() {
 		return nome;
 	}
+	
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+	
 	public String getCPF() {
 		return cpf;
 	}
+	
 	public void setCPF(String cpf) {
 		this.cpf = cpf.replaceAll("[^\\d]", "");
-		
 	}
+	
 	public LocalDate getDataNascimento() {
 		return dataNascimento;
 	}
+	
 	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
+	}
+	
+	public String getTipoDeCliente() {
+		return tipoDeCliente;
+	}
+	
+	public void setTipoDeCliente(String tipoDeCliente) {
+		this.tipoDeCliente = tipoDeCliente;
 	}
 }

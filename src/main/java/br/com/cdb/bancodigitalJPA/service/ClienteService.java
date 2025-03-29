@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigitalJPA.DTO.ClienteDTO;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
+import br.com.cdb.bancodigitalJPA.entity.ClienteComum;
+import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
+import br.com.cdb.bancodigitalJPA.entity.ClienteSuper;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
 
 @Service
@@ -37,7 +42,23 @@ public class ClienteService {
 			throw new IllegalStateException("O cliente deve ter 18 anos ou mais para criar a conta!");
 		}
 		
-		Cliente cliente = new Cliente();
+		Cliente cliente;
+		
+		if(clienteDto.getTipoDeCliente().equalsIgnoreCase("Comum")) {
+			cliente = new ClienteComum();
+		}
+		
+		else if(clienteDto.getTipoDeCliente().equalsIgnoreCase("Super")) {
+			cliente = new ClienteSuper();
+		}
+		
+		else if(clienteDto.getTipoDeCliente().equalsIgnoreCase("Premium")) {
+			cliente = new ClientePremium();
+		}
+		else {
+			throw new IllegalStateException("blablbal");
+		}
+		
 		cliente.setCpf(clienteDto.getCPF());
 		cliente.setNome(clienteDto.getNome());
 		cliente.setIdade(idade);
@@ -68,8 +89,6 @@ public class ClienteService {
 	
 	public Cliente atualizarCliente(String nome, String cpf, LocalDate dataNascimento, Long id) {
 		Optional<Cliente> clienteAchado = clienteRepository.findById(id);
-		
-		ClienteDTO clienteDto;
 		
 		if(clienteAchado.isPresent()) {
 			Cliente clienteAtualizar = clienteAchado.get();
