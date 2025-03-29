@@ -42,7 +42,7 @@ public class ClienteController {
 		}
 		
 		else {
-			return new ResponseEntity<>("Cliente " + clienteAdicionado.getNome() + " não foi adicionado ao sistema, "
+			return new ResponseEntity<>("Cliente " + " não foi adicionado ao sistema, "
 			+ "nome ou CPF inválidos", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
@@ -62,11 +62,11 @@ public class ClienteController {
 	}
 	
 	@PutMapping("/atualizar/{id}")
-	public ResponseEntity<String> atualizarCliente(@PathVariable Long id,  @RequestBody @Valid Cliente cliente) {
+	public ResponseEntity<String> atualizarCliente(@PathVariable Long id,  @RequestBody @Valid ClienteDTO clienteDto) {
 		
-		Cliente clienteAtualizado = clienteService.atualizarCliente(cliente.getNome(), cliente.getCpf(), id);
+		Cliente clienteAtualizado = clienteService.atualizarCliente(clienteDto.getNome(), clienteDto.getCPF(), clienteDto.getDataNascimento(), id);
 		if(clienteAtualizado != null) {
-			return new ResponseEntity<>("Cliente " + cliente.getNome() + " atualizado com sucesso!", HttpStatus.ACCEPTED);
+			return new ResponseEntity<>("Cliente " + clienteDto.getNome() + " atualizado com sucesso!", HttpStatus.ACCEPTED);
 		}
 		else {
 			return new ResponseEntity<>("Não foi possível atualizar o cliente ", HttpStatus.NOT_MODIFIED);

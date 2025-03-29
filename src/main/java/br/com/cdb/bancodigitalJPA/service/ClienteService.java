@@ -66,17 +66,29 @@ public class ClienteService {
 		
 	}
 	
-	public Cliente atualizarCliente(String nome, String cpf, Long id) {
+	public Cliente atualizarCliente(String nome, String cpf, LocalDate dataNascimento, Long id) {
 		Optional<Cliente> clienteAchado = clienteRepository.findById(id);
+		
+		ClienteDTO clienteDto;
 		
 		if(clienteAchado.isPresent()) {
 			Cliente clienteAtualizar = clienteAchado.get();
+			
 			Optional<Cliente> clienteExistente = clienteRepository.findByCpf(clienteAtualizar.getCpf());
+			
 			if(clienteExistente.isPresent()) {
 				throw new IllegalArgumentException("Já há um cliente cadastrado nesse CPF");
 			}
+			
+			LocalDate hoje = LocalDate.now();
+			Integer idade = Period.between(dataNascimento, hoje).getYears();
+			if(idade < 18) {
+				throw new IllegalArgumentException("Apenas maiores de idade podem criar conta");
+			}
+		
 			clienteAtualizar.setNome(nome);
 			clienteAtualizar.setCpf(cpf);
+			clienteAtualizar.setIdade(idade);
 			return clienteRepository.save(clienteAtualizar);
 		}
 		else { return null; }

@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -21,7 +23,8 @@ public class ClienteDTO {
 	@Pattern(regexp = "\\d{11}", message = "O CPF deve conter exatamente 11 digitos")
 	private String cpf;
 	
-	
+	@Past
+	@NotNull(message = "A data de nascimento não pode estar vazia")
 	private LocalDate dataNascimento;
 	
 	
