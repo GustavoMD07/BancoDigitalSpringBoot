@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitalJPA.DTO.ClienteDTO;
+import br.com.cdb.bancodigitalJPA.DTO.ClienteResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.exception.ListaVaziaException;
 import br.com.cdb.bancodigitalJPA.service.ClienteService;
@@ -38,14 +39,14 @@ public class ClienteController {
 		
 		if(clienteAdicionado != null) {
 			return new ResponseEntity<>("Cliente " + clienteAdicionado.getNome() + 
-			" do tipo: " + clienteDto.getTipoDeCliente() + "adicionado com sucesso",
+			" do tipo: " + clienteDto.getTipoDeCliente() + " adicionado com sucesso",
 				HttpStatus.CREATED);
 			//esse HttpStatus são aqueles números tipo "404 - not found", "200 - ok", lembra do site dos gatos
 		}
 		
 		else {
 			return new ResponseEntity<>("Cliente não foi adicionado ao sistema, "
-			+ "nome ou CPF inválidos", HttpStatus.NOT_ACCEPTABLE);
+			+ "operações inválidas", HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 	
@@ -76,22 +77,21 @@ public class ClienteController {
 	}
 	
 	@GetMapping("/listAll")
-	public ResponseEntity<List<Cliente>> listarClientes() {
-		List<Cliente> clientes = clienteService.getAllClientes();
+	public ResponseEntity<List<ClienteResponse>> listarClientes() {
+		List<ClienteResponse> clientes = clienteService.getAllClientes();
 		if(clientes.isEmpty()) {
 			throw new ListaVaziaException("Não foram identificados clientes na lista");
 		}
-		return new ResponseEntity<List<Cliente>>(clientes, HttpStatus.OK);
+		return new ResponseEntity<>(clientes, HttpStatus.OK);
 	}
 	
 	@GetMapping("/list/{id}")			//com o PathVariable, eu mostro que o LongId vai ser o que o usuário escreve
-	public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long id) {
+	public ResponseEntity<ClienteResponse> buscarClientePorId(@PathVariable Long id) {
 		
-		Optional<Cliente> clienteProcurado = clienteService.buscarClientePorId(id);
+		Optional<ClienteResponse> clienteProcurado = clienteService.buscarClientePorId(id);
 		if( clienteProcurado.isPresent() ) {
 			return new ResponseEntity<>( clienteProcurado.get(), HttpStatus.FOUND);
 		}
-		
 		else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

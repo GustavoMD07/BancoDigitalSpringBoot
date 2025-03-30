@@ -34,14 +34,18 @@ public abstract class Cliente {
 	//cpf tem que ser único
 	@Column(unique = true)
 	private String cpf;
-	
 	private Integer idade;
-	
 	private String nome;
 	
 	@Column(name = "tipo_de_cliente", insertable = false, updatable = false)
 	private String tipoDeCliente;
-	
+									//logo ao criar um atributo no Entity, ele já cria essa coluna no H2
+	private String cep;				//isso tudo vai ser mostrado no H2, que é o nosso banco de dados
+
+	private String estado;			//o que for mostrado no Postman, vai ser o Response de cada entidade
+	private String cidade;
+	private String bairro;
+	private String rua;
 	
 
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
@@ -99,5 +103,45 @@ public abstract class Cliente {
 
 	public void setTipoDeCliente(String tipoDeCliente) {
 		this.tipoDeCliente = tipoDeCliente;
+	}
+	
+	public String getCep() {
+		return cep;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+	public String getCidade() {
+		return cidade;
+	}
+
+	public void setCidade(String cidade) {
+		this.cidade = cidade;
+	}
+
+	public String getBairro() {
+		return bairro;
+	}
+
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
+	}
+
+	public String getRua() {
+		return rua;
+	}
+
+	public void setRua(String rua) {
+		this.rua = rua;
 	}
 }

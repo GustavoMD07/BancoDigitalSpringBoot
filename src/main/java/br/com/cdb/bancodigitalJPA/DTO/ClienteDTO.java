@@ -8,9 +8,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 
 //tudo que tá no DTO, é o que eu preciso pra cadastrar no PostMan
 
+@Getter
 public class ClienteDTO {
 
 	@NotBlank(message = "O nome não pode estar vazio.")
@@ -21,7 +23,7 @@ public class ClienteDTO {
 	@Column(unique = true)
 	@NotBlank(message = "O cpf não pode estar vazio.")
 	@Pattern(regexp = "\\d{11}", message = "O CPF deve conter exatamente 11 digitos")
-	private String cpf;
+	private String CPF;
 	
 	@Past
 	@NotNull(message = "A data de nascimento não pode estar vazia")
@@ -30,37 +32,30 @@ public class ClienteDTO {
 	@NotBlank(message = "Selecione um tipo de conta || Comum || Super || Premium")
 	private String tipoDeCliente;
 	
-	
-	
-	public String getNome() {
-		return nome;
-	}
-	
+	@NotBlank(message = "o CEP não pode estar vazio")
+	@Pattern(regexp = "\\d{8}", message = "O CEP deve conter 8 digítos")
+	private String cep;
+
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
 	
-	public String getCPF() {
-		return cpf;
-	}
 	
 	public void setCPF(String cpf) {
-		this.cpf = cpf.replaceAll("[^\\d]", "");
+		this.CPF = cpf.replaceAll("[^\\d]", ""); //tiro qualquer traço/ponto/espaço do cpf
 	}
 	
-	public LocalDate getDataNascimento() {
-		return dataNascimento;
-	}
 	
 	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
 	
-	public String getTipoDeCliente() {
-		return tipoDeCliente;
-	}
-	
 	public void setTipoDeCliente(String tipoDeCliente) {
 		this.tipoDeCliente = tipoDeCliente;
+	}
+	
+
+	public void setCep(String cep) {
+		this.cep = cep.replaceAll("[^\\d]", "");
 	}
 }
