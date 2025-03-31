@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/contas")
 public class ContaController {
-
-	 private static final Logger logger = LoggerFactory.getLogger(ContaController.class);
 	 
 	@Autowired
 	private ContaService contaService;

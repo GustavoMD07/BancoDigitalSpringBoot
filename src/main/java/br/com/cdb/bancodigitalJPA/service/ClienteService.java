@@ -18,6 +18,7 @@ import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.ClienteComum;
 import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
 import br.com.cdb.bancodigitalJPA.entity.ClienteSuper;
+import br.com.cdb.bancodigitalJPA.exception.ApiBloqueadaException;
 import br.com.cdb.bancodigitalJPA.exception.CpfDuplicadoException;
 import br.com.cdb.bancodigitalJPA.exception.IdadeInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
@@ -162,10 +163,10 @@ public class ClienteService {
 				// se eu consigo
 				// também verifico se o corpo é nulo, se for, tem algo errado
 			} else {
-				throw new IllegalStateException("CEP inválido");
+				throw new ObjetoNuloException("CEP inválido");
 			}
 		} catch (Exception e) {
-			throw new IllegalStateException("Erro ao integrar com a APi" + e.getMessage());
+			throw new ApiBloqueadaException("Erro ao integrar com a APi" + e.getMessage());
 		}
 	}
 
