@@ -29,6 +29,8 @@ public abstract class Cartao {
 	private String tipoDeCartao;
 	
 	private String senha;
+	
+	
 	private String numCartao;
 	
 	@ManyToOne
@@ -39,16 +41,10 @@ public abstract class Cartao {
 	
 	
 	
-	
 	public Long getId() {
 		return id;
 	}
 	
-	@JsonProperty("tipoDeCartao")
-	public String getTipoDeCartao() {
-		return tipoDeCartao;
-	}
-
 	public String getSenha() {
 		return senha;
 	}
@@ -59,5 +55,10 @@ public abstract class Cartao {
 
 	public Conta getConta() {
 		return conta;
+	}
+	
+	@JsonProperty("tipoDeCartao")
+	public String getTipoDeCartao() {
+		return tipoDeCartao;
 	}
 }
