@@ -11,6 +11,7 @@ import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
 import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
+import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
@@ -39,7 +40,7 @@ public class ContaService {
 		Cliente cliente = clienteEncontrado.get();
 
 		if (cliente.getContas() != null && cliente.getContas().size() >= 2) {
-			throw new IllegalStateException("O cliente já possui duas contas");
+			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
 
 		conta.setCliente(cliente);

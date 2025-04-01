@@ -16,7 +16,7 @@ public class CartaoDTO {
 	
 	@NotBlank(message = "A senha não pode estar vazia")
 	@Size(min = 8, max = 100, message = "A senha precisa ter no minímo 8 caracteres")
-	@Pattern(regexp = "^(?=.*[A-Z](?=.*\\d)(?=.*[!_@#-]).+$", 
+	@Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!_@#-]).+$", 
 	message = "A senha deve conter pelo menos uma letra maíscula, um número e um caracter especial "
 			+ "(- _ ! * @ #)")
 	private String senha;

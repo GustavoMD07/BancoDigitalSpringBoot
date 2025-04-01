@@ -7,8 +7,18 @@ public class CartaoDebito extends Cartao {
 
 	private double limiteDiario = 400;
 	
-	
+
 	public CartaoDebito() {
 		
 	}
+	
+	public double getLimiteDiario() {
+		return limiteDiario;
+	}
+
+
+	public void setLimiteDiario(double limiteDiario) {
+		this.limiteDiario = limiteDiario;
+	}
+
 }

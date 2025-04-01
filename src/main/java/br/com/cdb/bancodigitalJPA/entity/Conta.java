@@ -55,7 +55,6 @@ public abstract class Conta {							//esse é o parâmetro pra diferenciar
 		this.id = id;
 	}
 
-
 	public Double getSaldo() {
 		return saldo;
 	}

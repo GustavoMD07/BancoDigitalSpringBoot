@@ -18,8 +18,8 @@ import lombok.Setter;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_de_cartao")
-@Setter
 public abstract class Cartao {
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,15 +30,17 @@ public abstract class Cartao {
 	
 	private String senha;
 	
+	private boolean status;
 	
+	
+
+	@Column(unique = true)
 	private String numCartao;
 	
 	@ManyToOne
 	@JoinColumn(name = "conta_id")
 	@JsonBackReference
-	private Conta conta;
-	
-	
+	protected Conta conta;
 	
 	
 	public Long getId() {
@@ -52,13 +54,41 @@ public abstract class Cartao {
 	public String getNumCartao() {
 		return numCartao;
 	}
+	
+	@JsonProperty("tipoDeCartao")
+	public String getTipoDeCartao() {
+		return tipoDeCartao;
+	}
 
 	public Conta getConta() {
 		return conta;
 	}
 	
-	@JsonProperty("tipoDeCartao")
-	public String getTipoDeCartao() {
-		return tipoDeCartao;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setTipoDeCartao(String tipoDeCartao) {
+		this.tipoDeCartao = tipoDeCartao;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	public void setNumCartao(String numCartao) {
+		this.numCartao = numCartao;
+	}
+
+	public void setConta(Conta conta) {
+		this.conta = conta;
+	}
+	
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 }
