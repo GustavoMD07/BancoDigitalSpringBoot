@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,5 +70,24 @@ public class CartaoController {
 			throw new ListaVaziaException("Não foram encontrados cartões");
 		}
 		return new ResponseEntity<>(cartoes, HttpStatus.FOUND);
+	}
+	
+	@GetMapping("/list/{id}")
+	public ResponseEntity<Cartao> buscarCartao(@PathVariable Long id) {
+		Cartao cartao = cartaoService.buscarCartaoPorId(id);
+		return new ResponseEntity<>(cartao, HttpStatus.FOUND);
+	}
+	
+	@PutMapping("/desativar/{id}")
+	public ResponseEntity<String> desativarCartao(@PathVariable Long id) {
+		Cartao cartao = cartaoService.desativarCartao(id);
+		
+		return new ResponseEntity<>("Cartão desativado com sucesso!", HttpStatus.OK);
+	}
+	
+	@PutMapping("/ativar/{id}")
+	public ResponseEntity<String> ativarCartao(@PathVariable Long id) {
+		Cartao cartao = cartaoService.ativarCartao(id);
+		return new ResponseEntity<>("Cartão ativado com sucesso!", HttpStatus.OK);
 	}
 }

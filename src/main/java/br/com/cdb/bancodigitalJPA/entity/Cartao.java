@@ -91,4 +91,5 @@ public abstract class Cartao {
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
+	
 }

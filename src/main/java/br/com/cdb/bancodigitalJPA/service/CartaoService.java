@@ -4,11 +4,17 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
+import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
+import br.com.cdb.bancodigitalJPA.entity.CartaoDebito;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
+import br.com.cdb.bancodigitalJPA.exception.StatusNegadoException;
+import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.CartaoRepository;
 import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
 
@@ -44,6 +50,44 @@ public class CartaoService {
 	public List<Cartao> listarCartoes() {
 		return cartaoRepository.findAll();
 	}
+	
+	public Cartao desativarCartao(Long id) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		Cartao cartao = cartaoEncontrado.get();
+		if(!cartao.isStatus()) {
+			throw new StatusNegadoException("Seu cartão já está desativado!");
+		}
+		cartao.setStatus(false);
+		return cartaoRepository.save(cartao);
+	}
+	
+	public Cartao ativarCartao(Long id) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		Cartao cartao = cartaoEncontrado.get();
+		if(cartao.isStatus()) {
+			throw new StatusNegadoException("Seu cartão já está ativado!");
+		}
+		cartao.setStatus(true);
+		return cartaoRepository.save(cartao);
+	}
+	
+	public Cartao buscarCartaoPorId(Long id) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		if(cartaoEncontrado.isEmpty()) {
+			throw new ObjetoNuloException("Conta não encontrada");
+		}
+		return cartaoEncontrado.get();
+	}
+	
+	public void alterarLimiteCredito(Long id) {
+		Optional<Cartao> cartaoEncontrada = cartaoRepository.findById(id);
+		Cartao cartao = cartaoEncontrada.get();
+		
+		if(cartao instanceof CartaoDebito) {
+			throw new SubClasseDiferenteException("Opção indisponível para cartão de débito");
+		}
+		CartaoCredito cartaoC = (CartaoCredito) cartao;
+	}
 
 	public String gerarNumeroCartao() {
 		String num = "";
@@ -55,7 +99,7 @@ public class CartaoService {
 		return num + digitoVerificador;
 	}
 
-	// Algoritmo de Luhn
+										// Algoritmo de Luhn
 
 	private int calcularDigitoVerificador(String num) {
 		int soma = 0;
