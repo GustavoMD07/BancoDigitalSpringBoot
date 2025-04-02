@@ -1,13 +1,12 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
-import br.com.cdb.bancodigitalJPA.service.ClienteService;
 import jakarta.persistence.Entity;
 
 @Entity
 public class CartaoCredito extends Cartao {
 	
 	
-	private double limiteCredito = 5000;
+	private double limiteCredito;
 	
 	private double fatura;
 	
@@ -16,7 +15,7 @@ public class CartaoCredito extends Cartao {
 	}
 	
 	public double getLimiteCredito() {
-		return limiteCredito;
+		return getConta().getCliente().getLimiteCredito();
 	}
 
 	public void setLimiteCredito(double limiteCredito) {

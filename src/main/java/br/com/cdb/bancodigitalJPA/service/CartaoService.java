@@ -4,8 +4,6 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
@@ -79,14 +77,62 @@ public class CartaoService {
 		return cartaoEncontrado.get();
 	}
 	
-	public void alterarLimiteCredito(Long id) {
-		Optional<Cartao> cartaoEncontrada = cartaoRepository.findById(id);
-		Cartao cartao = cartaoEncontrada.get();
+	public void alterarLimiteCredito(Long id, double novoLimite) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		Cartao cartao = cartaoEncontrado.get();
 		
 		if(cartao instanceof CartaoDebito) {
 			throw new SubClasseDiferenteException("Opção indisponível para cartão de débito");
 		}
 		CartaoCredito cartaoC = (CartaoCredito) cartao;
+		cartaoC.setLimiteCredito(novoLimite);
+		cartaoRepository.save(cartaoC);
+	}
+	
+	public void alterarSenha(Long id, String senhaAntiga, String novaSenha) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		Cartao cartao = cartaoEncontrado.get();
+		
+		if(cartaoEncontrado.isEmpty()) {
+			throw new ObjetoNuloException("Cartão não encontrado");
+		}
+		
+		if(senhaAntiga.equals(cartao.getSenha())) {
+			throw new StatusNegadoException("Senha inválida!");
+		} //sempre usa o equals pra comparar o conteúdo de strings!
+		
+		if(novaSenha.isEmpty()) {
+			throw new ObjetoNuloException("A nova senha não pode ser nula");
+		}
+		
+		if(novaSenha.length() < 8) {
+			throw new StatusNegadoException("Sua nova senha precisa ter mais de 8 caracteres!");
+		}
+		
+		boolean maiuscula = false;
+		boolean digito = false;
+		boolean caracterEspecial = false;
+		String especial = "!_*@#-";
+		//eu converto a novaSenha em um array pra conseguir verificar cada coisa que o usuário colocou na senha
+		//eu só preciso de uma maiuscula, um número e um especial, então olho todos e caso ALGUM TENHA, eu prossigo
+		for (char c : novaSenha.toCharArray()) {
+		    if (Character.isUpperCase(c)) {
+		        maiuscula = true;
+		    }
+		    if (Character.isDigit(c)) {
+		        digito = true;
+		    }
+		    if (especial.indexOf(c) >= 0) { // Se encontrar o caractere na string especiais
+		        caracterEspecial = true;
+		    }
+		}
+
+		if (!maiuscula || !digito || !caracterEspecial) {
+		    throw new StatusNegadoException("Sua nova senha precisa conter pelo menos uma letra maiúscula, um número e um caracter especial (- _ ! * @ #)");
+		}
+		
+		cartao.setSenha(novaSenha);
+		cartaoRepository.save(cartao);
 	}
 
 	public String gerarNumeroCartao() {

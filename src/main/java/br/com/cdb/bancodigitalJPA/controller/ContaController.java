@@ -29,10 +29,6 @@ import br.com.cdb.bancodigitalJPA.service.ContaService;
 import jakarta.validation.Valid;
 
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @RestController
 @RequestMapping("/contas")
 public class ContaController {
@@ -64,7 +60,7 @@ public class ContaController {
 		
 		conta.setSaldo(contaDto.getSaldo());
 		conta.setCliente(clienteProcurado.get());
-		Conta contaSalva = contaService.addConta(conta);
+		contaService.addConta(conta);
 		return new ResponseEntity<>("Conta "+ contaDto.getTipoDeConta() +" adicionada com sucesso", 
 				HttpStatus.CREATED);
 		

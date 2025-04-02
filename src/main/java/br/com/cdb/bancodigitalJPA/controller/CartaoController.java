@@ -6,12 +6,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitalJPA.DTO.CartaoDTO;
@@ -24,6 +26,7 @@ import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
 import br.com.cdb.bancodigitalJPA.service.CartaoService;
 import jakarta.validation.Valid;
 
+@Validated
 @RestController
 @RequestMapping("/cartoes")
 public class CartaoController {
@@ -58,7 +61,7 @@ public class CartaoController {
 		cartao.setSenha(cartaoDto.getSenha());
 		cartao.setNumCartao(cartaoService.gerarNumeroCartao());
 		cartao.setStatus(true);
-		Cartao cartaoSalvo = cartaoService.addCartao(cartao);
+		cartaoService.addCartao(cartao);
 		return new ResponseEntity<>("Cartão do tipo " + cartaoDto.getTipoDeCartao() + " adicionado com sucesso",
 				HttpStatus.OK);
 	}
@@ -80,14 +83,26 @@ public class CartaoController {
 	
 	@PutMapping("/desativar/{id}")
 	public ResponseEntity<String> desativarCartao(@PathVariable Long id) {
-		Cartao cartao = cartaoService.desativarCartao(id);
+		cartaoService.desativarCartao(id);
 		
 		return new ResponseEntity<>("Cartão desativado com sucesso!", HttpStatus.OK);
 	}
 	
 	@PutMapping("/ativar/{id}")
 	public ResponseEntity<String> ativarCartao(@PathVariable Long id) {
-		Cartao cartao = cartaoService.ativarCartao(id);
+		cartaoService.ativarCartao(id);
 		return new ResponseEntity<>("Cartão ativado com sucesso!", HttpStatus.OK);
+	}
+	
+	@PutMapping("/limite/{id}")
+	public ResponseEntity<String> alterarLimiteCredito(@PathVariable Long id, @RequestParam double novoLimite) {
+		cartaoService.alterarLimiteCredito(id, novoLimite);
+		return new ResponseEntity<>("Novo limite: R$" + novoLimite, HttpStatus.OK);
+	}
+	
+	@PutMapping("/senha/{id}")
+	public ResponseEntity<String> alterarSenha(@PathVariable Long id, @RequestParam String senhaAntiga, @RequestParam String novaSenha) {
+		cartaoService.alterarSenha(id, senhaAntiga, novaSenha);
+		return new ResponseEntity<>("Nova senha: " + novaSenha, HttpStatus.OK);
 	}
 }

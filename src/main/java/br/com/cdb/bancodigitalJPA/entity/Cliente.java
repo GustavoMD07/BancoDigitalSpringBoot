@@ -47,6 +47,9 @@ public abstract class Cliente {
 	private String bairro;
 	private String rua;
 	
+	public abstract double getTaxaManutencao();
+	public abstract double getTaxaRendimento();
+	public abstract double getLimiteCredito();
 
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
 	@JsonManagedReference
