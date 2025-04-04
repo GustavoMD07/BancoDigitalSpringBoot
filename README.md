@@ -66,17 +66,17 @@ Senha: (deixe em branco)
 
 O projeto possui um sistema de tratamento de erros personalizado usando:
 
-**Exceções customizadas na pasta exceptions**
+- **Exceções customizadas na pasta exceptions**
 
-**Classe global de handler na pasta handler, utilizando @ControllerAdvice**
+- **Classe global de handler na pasta handler, utilizando @ControllerAdvice**
 
 Dessa forma, Qualquer erro de negócio ou validação retorna uma resposta clara e padronizada pro cliente da API.
 
 # 📈 Melhorias Futuras
 
-🔹 Persistência com banco de dados real (PostgreSQL ou MySQL)
-🔹 Autenticação com Spring Security (JWT ou Basic Auth)
-🔹 Testes unitários com JUnit e Mockito
-🔹 Documentação de API com Swagger
-🔹 Interface frontend (React ou Angular) para visualização dos dados
+🔹 Persistência com banco de dados real (PostgreSQL ou MySQL)  
+🔹 Autenticação com Spring Security (JWT ou Basic Auth)  
+🔹 Testes unitários com JUnit e Mockito  
+🔹 Documentação de API com Swagger  
+🔹 Interface frontend (React ou Angular) para visualização dos dados  
 
