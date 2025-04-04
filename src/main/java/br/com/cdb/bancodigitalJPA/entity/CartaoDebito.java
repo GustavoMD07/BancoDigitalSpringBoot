@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 @Entity
 public class CartaoDebito extends Cartao {
 
-	private double limiteDiario = 400;
+	private double limiteDiario = 500;
 	
 
 	public CartaoDebito() {

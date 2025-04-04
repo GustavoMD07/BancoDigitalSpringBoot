@@ -100,9 +100,65 @@ public class CartaoController {
 		return new ResponseEntity<>("Novo limite: R$" + novoLimite, HttpStatus.OK);
 	}
 	
+	@PutMapping("limite-diario/{id}")
+	public ResponseEntity<String> alterarLimiteDiario(@PathVariable Long id, @RequestParam double novoLimite) {
+		cartaoService.alterarLimiteDiario(id, novoLimite);
+		return new ResponseEntity<>("Novo limite diário: R$ " + novoLimite, HttpStatus.OK);
+	}
+	
 	@PutMapping("/senha/{id}")
 	public ResponseEntity<String> alterarSenha(@PathVariable Long id, @RequestParam String senhaAntiga, @RequestParam String novaSenha) {
 		cartaoService.alterarSenha(id, senhaAntiga, novaSenha);
 		return new ResponseEntity<>("Nova senha: " + novaSenha, HttpStatus.OK);
 	}
+	
+	@GetMapping("/fatura/{id}")
+	public ResponseEntity<String> verificarFatura(@PathVariable Long id) {
+		Cartao cartao = cartaoService.buscarCartaoPorId(id);
+		
+		if(cartao instanceof CartaoCredito) {
+			CartaoCredito cartaoC = (CartaoCredito) cartao;
+			return new ResponseEntity<>("Fatura: R$" + cartaoService.verificarFatura(id) + "\nATENÇÃO: Pague sua fatura quando chegar ao limite"
+					+ "\n Limite de Crédito: R$" + cartaoC.getLimiteCredito(), HttpStatus.OK );
+		}
+		
+		else {
+			return new ResponseEntity<>("Não foi possível verificar a fatura", HttpStatus.NOT_ACCEPTABLE);
+		}
+	}
+	
+	@PostMapping("/pagamento/{id}")
+	public ResponseEntity<String> realizarPagamento(@PathVariable Long id, @RequestParam double valor) {
+		Cartao cartao = cartaoService.buscarCartaoPorId(id);
+		cartaoService.realizarPagamento(id, valor);
+		
+		if(cartao instanceof CartaoCredito) {
+			CartaoCredito cartaoC = (CartaoCredito) cartao;
+			return new ResponseEntity<>("Pagamento de valor: R$" + valor + " realizado\n fatura: R$" + 
+			cartaoC.getFatura(), HttpStatus.OK);
+		}
+		
+		else if (cartao instanceof CartaoDebito) {
+			CartaoDebito cartaoD = (CartaoDebito) cartao;
+			return new ResponseEntity<>("Pagamento de valor: R$" + valor + "realizado\n limite diário disponível: R$" + 
+			cartaoD.getLimiteDiario(), HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Não foi possível realizar o pagamento", HttpStatus.NOT_ACCEPTABLE);
+	}
+	
+	@PostMapping("/pagamento/fatura/{id}")
+	public ResponseEntity<String> pagarFatura(@PathVariable Long id, @RequestParam double valor) {
+		Cartao cartao = cartaoService.buscarCartaoPorId(id);
+		Conta conta = cartao.getConta();
+		cartaoService.pagarFatura(id, valor);
+		if(cartao instanceof CartaoCredito) {
+			CartaoCredito cartaoC = (CartaoCredito) cartao;
+			return new ResponseEntity<>("Fatura atualizada. Pagamento feito retirando saldo da conta. \nNova fatura: R$" + cartaoC.getFatura() +
+			"\n Saldo da conta: R$" + conta.getSaldo(), HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<>("Não foi possível pagar a fatura", HttpStatus.NOT_ACCEPTABLE);
+		}
+	}
+	
 }

@@ -20,12 +20,12 @@ public class CpfDuplicadoHandler {
 			HttpServletRequest request) {
 		Map<String, Object> response = new HashMap<>();
 		response.put("timestamp", LocalDate.now());
-		response.put("Status", HttpStatus.BAD_REQUEST.value());
+		response.put("Status", HttpStatus.CONFLICT.value());
 		response.put("error", "Duplicação");
 		response.put("message", ex.getMessage());
 		response.put("path", request.getRequestURI());
 		
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 	
 	}
 }

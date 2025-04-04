@@ -11,6 +11,7 @@ import br.com.cdb.bancodigitalJPA.entity.CartaoDebito;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
+import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.StatusNegadoException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.CartaoRepository;
@@ -69,17 +70,126 @@ public class CartaoService {
 		return cartaoRepository.save(cartao);
 	}
 	
+	public void realizarPagamento(Long id, double valor) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		
+		if(cartaoEncontrado.isEmpty()) {
+			throw new ObjetoNuloException("Cartão não encontrado");
+		}
+		
+		if(valor < 0) {
+			throw new StatusNegadoException("Não é possível realizar o pagamento de um valor menor que 0");
+		}
+		
+		Cartao cartao = cartaoEncontrado.get();
+		
+		if(!cartao.isStatus()) {
+			throw new StatusNegadoException("Seu cartão está desativado, ative-o para continuar");
+		}
+		
+		if(cartao instanceof CartaoDebito) {
+			
+			CartaoDebito cartaoD = (CartaoDebito) cartao;
+			
+			if(cartaoD.getLimiteDiario() < valor) {
+				throw new SaldoInsuficienteException("O valor excede o limite diário!");
+			}
+			
+			cartaoD.setLimiteDiario(cartaoD.getLimiteDiario() - valor);
+		}
+		
+		else if(cartao instanceof CartaoCredito) {
+			CartaoCredito cartaoC = (CartaoCredito) cartao;
+			
+			if(cartaoC.getFatura() + valor > cartaoC.getLimiteCredito()) {
+				throw new SaldoInsuficienteException("Valor ultrapassa o limite de crédito, pague a fatura ou aumente o limite!");
+			}
+			
+			cartaoC.setFatura(cartaoC.getFatura() + valor);
+		}
+		
+		cartaoRepository.save(cartao);
+	}
+	
+	public void pagarFatura(Long id, Double valor) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		
+		if(cartaoEncontrado.isEmpty()) {
+			throw new ObjetoNuloException("Cartão não encontrado");
+		}
+		
+		Cartao cartao = cartaoEncontrado.get();
+		Conta conta = cartao.getConta();
+		
+		if(cartao instanceof CartaoDebito) {
+			throw new SubClasseDiferenteException("Cartão de débito não possuí fatura, fique tranquilo");
+		}
+		
+		CartaoCredito cartaoC = (CartaoCredito) cartao;
+		
+		if(cartaoC.getFatura() == 0) {
+			throw new ObjetoNuloException("Não há fatura a ser paga");
+		}
+		
+		if(valor <= 0) {
+			throw new ObjetoNuloException("Não é possível pagar com o valor abaixo de 0...");
+		}
+		
+		if(valor > cartaoC.getFatura()) {
+			valor = cartaoC.getFatura();
+		}
+		
+		if(conta.getSaldo() < valor) {
+			throw new SaldoInsuficienteException("Saldo da conta insuficiente para pagar a fatura");
+		}
+		
+		conta.setSaldo(conta.getSaldo() - valor);
+		cartaoC.setFatura(cartaoC.getFatura() - valor);
+		cartaoRepository.save(cartaoC);
+		
+	}
+	
 	public Cartao buscarCartaoPorId(Long id) {
 		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
 		if(cartaoEncontrado.isEmpty()) {
-			throw new ObjetoNuloException("Conta não encontrada");
+			throw new ObjetoNuloException("Cartão não encontrado");
 		}
 		return cartaoEncontrado.get();
 	}
 	
+	public void alterarLimiteDiario(Long id, double novoLimite) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		
+		if(cartaoEncontrado.isEmpty()) {
+			throw new ObjetoNuloException("Cartão não encontrado!");
+		}
+		
+		Cartao cartao = cartaoEncontrado.get();
+		
+		if(!cartao.isStatus()) {
+			throw new StatusNegadoException("Seu cartão está desativado, ative-o para continuar");
+		}
+		
+		if(cartao instanceof CartaoCredito) {
+			throw new SubClasseDiferenteException("Opção indisponível para cartão de crédito");
+		}
+		CartaoDebito cartaoD = (CartaoDebito) cartao;
+		cartaoD.setLimiteDiario(novoLimite);
+		cartaoRepository.save(cartaoD);
+	}
+	
 	public void alterarLimiteCredito(Long id, double novoLimite) {
 		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		
+		if(cartaoEncontrado.isEmpty()) {
+			throw new ObjetoNuloException("Cartão não encontrado!");
+		}
+		
 		Cartao cartao = cartaoEncontrado.get();
+		
+		if(!cartao.isStatus()) {
+			throw new StatusNegadoException("Seu cartão está desativado, ative-o para continuar");
+		}
 		
 		if(cartao instanceof CartaoDebito) {
 			throw new SubClasseDiferenteException("Opção indisponível para cartão de débito");
@@ -87,6 +197,23 @@ public class CartaoService {
 		CartaoCredito cartaoC = (CartaoCredito) cartao;
 		cartaoC.setLimiteCredito(novoLimite);
 		cartaoRepository.save(cartaoC);
+	}
+	
+	public double verificarFatura(Long id) {
+		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
+		
+		if(cartaoEncontrado.isEmpty()) {
+			throw new ObjetoNuloException("Cartão não encontrado!");
+		}
+		
+		Cartao cartao = cartaoEncontrado.get();
+		
+		if(cartao instanceof CartaoDebito) {
+			throw new SubClasseDiferenteException("Cartão de Débito não possuí fatura!");
+		}
+		
+		CartaoCredito cartaoC = (CartaoCredito) cartao;
+		return cartaoC.getFatura();
 	}
 	
 	public void alterarSenha(Long id, String senhaAntiga, String novaSenha) {
@@ -97,8 +224,12 @@ public class CartaoService {
 			throw new ObjetoNuloException("Cartão não encontrado");
 		}
 		
-		if(senhaAntiga.equals(cartao.getSenha())) {
-			throw new StatusNegadoException("Senha inválida!");
+		if(!cartao.isStatus()) {
+			throw new StatusNegadoException("Seu cartão está desativado, ative-o para continuar");
+		}
+		
+		if(!senhaAntiga.equals(cartao.getSenha())) {
+			throw new StatusNegadoException("Senha antiga inválida!");
 		} //sempre usa o equals pra comparar o conteúdo de strings!
 		
 		if(novaSenha.isEmpty()) {
