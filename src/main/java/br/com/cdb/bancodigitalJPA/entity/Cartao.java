@@ -13,10 +13,9 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Setter;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo_de_cartao")
 public abstract class Cartao {
 
@@ -29,11 +28,8 @@ public abstract class Cartao {
 	private String tipoDeCartao;
 	
 	private String senha;
-	
 	private boolean status;
 	
-	
-
 	@Column(unique = true)
 	private String numCartao;
 	

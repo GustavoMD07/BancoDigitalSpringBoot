@@ -3,7 +3,6 @@ package br.com.cdb.bancodigitalJPA.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,59 +94,50 @@ public class ClienteService {
 	// Optional, por que ele evita
 	// que o método de erro, ele
 	public Cliente removerCliente(Long id) {
-		Optional<Cliente> clienteAchado = clienteRepository.findById(id);
-		if (clienteAchado.isPresent()) { // se eu consegui achar esse cliente, ai a gente remove ele
-			clienteRepository.deleteById(id);
-			return clienteAchado.get();
-		} else {
-			return null;
-		}
-
+		Cliente cliente = buscarClientePorId(id);
+		clienteRepository.deleteById(id);
+		return cliente;
 	}
 
 	public Cliente atualizarCliente(String nome, String cpf, LocalDate dataNascimento, Long id) {
-		Optional<Cliente> clienteAchado = clienteRepository.findById(id);
+		Cliente cliente = buscarClientePorId(id);
 
-		if (clienteAchado.isPresent()) {
-			Cliente clienteAtualizar = clienteAchado.get();
+		Cliente clienteAtualizar = cliente;
 
-			if (clienteAtualizar == null) {
-				throw new ObjetoNuloException("Não foi encontrado nenhum cliente");
-			}
-
-			LocalDate hoje = LocalDate.now();
-			Integer idade = Period.between(dataNascimento, hoje).getYears();
-			if (idade < 18) {
-				throw new IdadeInsuficienteException("Apenas maiores de idade podem criar conta");
-			}
-
-			clienteAtualizar.setNome(nome);
-
-			clienteAtualizar.setCpf(cpf);
-			if (clienteRepository.findByCpf(clienteAtualizar.getCpf()).isPresent()) {
-				throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
-			}
-
-			clienteAtualizar.setIdade(idade);
-			return clienteRepository.save(clienteAtualizar);
-		} else {
-			return null;
+		if (clienteAtualizar == null) {
+			throw new ObjetoNuloException("Não foi encontrado nenhum cliente");
 		}
 
+		LocalDate hoje = LocalDate.now();
+		Integer idade = Period.between(dataNascimento, hoje).getYears();
+		if (idade < 18) {
+			throw new IdadeInsuficienteException("Apenas maiores de idade podem criar conta");
+		}
+
+		clienteAtualizar.setNome(nome);
+
+		clienteAtualizar.setCpf(cpf);
+		if (clienteRepository.findByCpf(clienteAtualizar.getCpf()).isPresent()) {
+			throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
+		}
+
+		clienteAtualizar.setIdade(idade);
+		return clienteRepository.save(clienteAtualizar);
 	}
 
 	public List<ClienteResponse> getAllClientes() {
 		List<Cliente> clientes = clienteRepository.findAll();
 		return clientes.stream().map(this::converter).collect(Collectors.toList());
-		//stream pra poder mexer na lista, map pega todos os elementos clientes e chama o método converter
-		//e o método converter, converte pra ClienteResponse. O collect cria uma nova lista de ClienteResponse
-		//e a lista é retornada
+		// stream pra poder mexer na lista, map pega todos os elementos clientes e chama
+		// o método converter
+		// e o método converter, converte pra ClienteResponse. O collect cria uma nova
+		// lista de ClienteResponse
+		// e a lista é retornada
 	}
 
-	public Optional<ClienteResponse> buscarClientePorId(Long id) {
-		Optional<Cliente> cliente = clienteRepository.findById(id);
-		return cliente.map(this::converter);
-		//tamo convertendo tamo convertendo
+	public Cliente buscarClientePorId(Long id) {
+		return clienteRepository.findById(id).orElseThrow(() -> 
+			new ObjetoNuloException("Cliente não encontrado"));
 	}
 
 	private EnderecoResponse buscarEnderecoPorCep(String cep) {

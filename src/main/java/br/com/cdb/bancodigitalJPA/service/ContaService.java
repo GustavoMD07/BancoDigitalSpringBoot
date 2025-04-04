@@ -57,12 +57,8 @@ public class ContaService {
 	}
 
 	public Conta buscarContaPorId(Long id) {
-		Optional<Conta> conta = contaRepository.findById(id);
-		if (conta.isPresent()) {
-			return conta.get();
-		} else {
-			throw new ObjetoNuloException("Não foi encontrada a Conta com o ID " + id);
-		}
+		return contaRepository.findById(id).orElseThrow(() -> 
+			new ObjetoNuloException("Conta não encontrada"));
 	}
 
 	public List<Conta> listarContas() {

@@ -150,11 +150,8 @@ public class CartaoService {
 	}
 	
 	public Cartao buscarCartaoPorId(Long id) {
-		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
-		if(cartaoEncontrado.isEmpty()) {
-			throw new ObjetoNuloException("Cartão não encontrado");
-		}
-		return cartaoEncontrado.get();
+		return cartaoRepository.findById(id).orElseThrow(() ->
+				new ObjetoNuloException("Cartão não encontrado"));
 	}
 	
 	public void alterarLimiteDiario(Long id, double novoLimite) {
@@ -270,7 +267,7 @@ public class CartaoService {
 		String num = "";
 
 		for (int i = 0; i < QntdsNum; i++) {
-			num += random.nextInt(10);
+			num += random.nextInt(9);
 		}
 		int digitoVerificador = calcularDigitoVerificador(num);
 		return num + digitoVerificador;

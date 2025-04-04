@@ -55,7 +55,7 @@ public class ContaController {
 			conta = new ContaPoupanca();
 		}
 		else {
-			return new ResponseEntity<>("Por favor, selecione um tipo de conta correto", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, selecione um tipo de conta correto: Corrente | Poupança", HttpStatus.BAD_REQUEST);
 		}
 		
 		conta.setSaldo(contaDto.getSaldo());

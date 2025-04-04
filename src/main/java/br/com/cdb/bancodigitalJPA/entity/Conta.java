@@ -20,7 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) //juntar as classes filhas na mesma tabela
+@Inheritance(strategy = InheritanceType.JOINED) //juntar as classes filhas na mesma tabela
 @DiscriminatorColumn(name = "tipo_de_conta")    //a discriminatória vai ser o tipo de conta
 public abstract class Conta {							//esse é o parâmetro pra diferenciar
 	

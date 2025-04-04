@@ -21,7 +21,7 @@ import jakarta.persistence.OneToMany;
 //a gente pensa no Entity como se fosse a "interface" da tabela do nosso banco, é o que você guarda
 
 @Entity 
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // esse Discriminator, indica qual é a subclasse
+@Inheritance(strategy = InheritanceType.JOINED) // esse Discriminator, indica qual é a subclasse
 @DiscriminatorColumn(name = "tipo_de_cliente") //de cada cliente
 public abstract class Cliente {
 

@@ -1,7 +1,6 @@
 package br.com.cdb.bancodigitalJPA.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -88,16 +87,11 @@ public class ClienteController {
 	@GetMapping("/list/{id}")			//com o PathVariable, eu mostro que o LongId vai ser o que o usuário escreve
 	public ResponseEntity<ClienteResponse> buscarClientePorId(@PathVariable Long id) {
 		
-		Optional<ClienteResponse> clienteProcurado = clienteService.buscarClientePorId(id);
-		if( clienteProcurado.isPresent() ) {
-			return new ResponseEntity<>( clienteProcurado.get(), HttpStatus.FOUND);
-		}
-		else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		
-		//o próprio JPA já retorna o cliente com o ID, então eu não preciso usar um List, se eu usasse, eu estaria
-		//fazendo algo desnecessário
+		Cliente clienteProcurado = clienteService.buscarClientePorId(id);
+			return new ResponseEntity<>( ClienteResponse.fromEntity(clienteProcurado), HttpStatus.FOUND);
+			
+			//o próprio JPA já retorna o cliente com o ID, então eu não preciso usar um List, se eu usasse, eu estaria
+			//fazendo algo desnecessário
 	}
 	
 	
