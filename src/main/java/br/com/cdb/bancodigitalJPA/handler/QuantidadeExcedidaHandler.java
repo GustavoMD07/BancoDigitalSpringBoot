@@ -17,7 +17,7 @@ public class QuantidadeExcedidaHandler {
 
 	@ExceptionHandler(QuantidadeExcedidaException.class)
 	public ResponseEntity<Map<String, Object>> handleQuantidadeExcedidaException(QuantidadeExcedidaException ex, HttpServletRequest request) {
-		Map<String, Object> response = new HashMap();
+		Map<String, Object> response = new HashMap<>();
 		response.put("timelapse", LocalDate.now());
 		response.put("status", HttpStatus.BAD_REQUEST.value());
 		response.put("error", "Quantidade excedida");

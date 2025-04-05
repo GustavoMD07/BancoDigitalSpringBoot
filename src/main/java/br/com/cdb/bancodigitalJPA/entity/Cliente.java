@@ -1,10 +1,7 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
 import java.util.List;
-
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -20,9 +17,9 @@ import jakarta.persistence.OneToMany;
 //no entity mesmo, ele já cria a tabela no banco de dados (h2) ele já "Mapeia"
 //a gente pensa no Entity como se fosse a "interface" da tabela do nosso banco, é o que você guarda
 
-@Entity 
-@Inheritance(strategy = InheritanceType.JOINED) // esse Discriminator, indica qual é a subclasse
-@DiscriminatorColumn(name = "tipo_de_cliente") //de cada cliente
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo_de_cartao")
 public abstract class Cliente {
 
 	// gerando ID de forma icrementada
@@ -50,10 +47,11 @@ public abstract class Cliente {
 	public abstract double getTaxaManutencao();
 	public abstract double getTaxaRendimento();
 	public abstract double getLimiteCredito();
-
-	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
+	
+	@OneToMany(mappedBy = "conta", fetch = FetchType.EAGER)
 	@JsonManagedReference
 	private List<Conta> contas;
+
 	//por que usar? 1- Ele impede a criação de um cliente_id no cliente
 	//2- vai ser a Entidade Conta que vai ter o cliente_id
 	//estamos apontando que o cliente é dono da conta, que ele é o dono da Foreing Key
@@ -87,7 +85,7 @@ public abstract class Cliente {
 	public List<Conta> getContas() {
 		return contas;
 	}
-
+	
 	public void setContas(List<Conta> contas) {
 		this.contas = contas;
 	}

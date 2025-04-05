@@ -38,7 +38,7 @@ public class CartaoService {
 
 		Conta conta = contaEncontrada.get();
 
-		if (conta.getCartoes().size() >= 2) {
+		if (conta.getCartao().size() >= 2 ) {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
 
