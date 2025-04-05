@@ -47,7 +47,7 @@ public class CartaoController {
 		
 		Cartao cartao;
 		
-		if(cartaoDto.getTipoDeCartao().equalsIgnoreCase("Credito?????")) {
+		if(cartaoDto.getTipoDeCartao().equalsIgnoreCase("Credito")) {
 			cartao = new CartaoCredito();
 		}
 		else if (cartaoDto.getTipoDeCartao().equalsIgnoreCase("Debito")) {
