@@ -21,14 +21,18 @@ import br.com.cdb.bancodigitalJPA.exception.ApiBloqueadaException;
 import br.com.cdb.bancodigitalJPA.exception.CpfDuplicadoException;
 import br.com.cdb.bancodigitalJPA.exception.IdadeInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
+import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ClienteService {
-	// o Repository funciona como um DAO, o Service se comunica com o Repository
-	// agora, ele valida
-	// e pede pro Repository trazer alguma coisa que tá guardado nele, como um banco
-	// de dados
+
+	@PersistenceContext
+	private EntityManager entityManager;
+	// classe do Jakarta
 
 	// com o AutoWired eu não preciso me preocupar com a criação desse objeto
 	// quando for construido o objeto do Repository, ele vai fazer um new quando
@@ -64,12 +68,12 @@ public class ClienteService {
 		else if (clienteDto.getTipoDeCliente().equalsIgnoreCase("Premium")) {
 			cliente = new ClientePremium();
 		} else {
-			throw new IllegalStateException("Selecione o tipo de cliente");
+			throw new SubClasseDiferenteException("Selecione o tipo de cliente");
 		}
 
 		cliente.setCpf(clienteDto.getCPF());
 		cliente.setNome(clienteDto.getNome());
-		cliente.setIdade(idade);
+		cliente.setDataNascimento(clienteDto.getDataNascimento());
 		if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
 			throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
 		}
@@ -99,30 +103,36 @@ public class ClienteService {
 		return cliente;
 	}
 
-	public Cliente atualizarCliente(String nome, String cpf, LocalDate dataNascimento, Long id) {
-		Cliente cliente = buscarClientePorId(id);
+	@Transactional
+	public Cliente atualizarCliente(Long id, ClienteDTO clienteDto) {
+	    Cliente cliente = buscarClientePorId(id);
 
-		Cliente clienteAtualizar = cliente;
+	    String tipoAtual = cliente.getClass().getSimpleName().toUpperCase().replace("CLIENTE", "");
+	    String tipoNovo = clienteDto.getTipoDeCliente().toUpperCase();
 
-		if (clienteAtualizar == null) {
-			throw new ObjetoNuloException("Não foi encontrado nenhum cliente");
-		}
+	    if (!tipoAtual.equals(tipoNovo)) {
+	        throw new SubClasseDiferenteException("Não é possível alterar o tipo de cliente.");
+	    }
 
-		LocalDate hoje = LocalDate.now();
-		Integer idade = Period.between(dataNascimento, hoje).getYears();
-		if (idade < 18) {
-			throw new IdadeInsuficienteException("Apenas maiores de idade podem criar conta");
-		}
+	    // Agora atualiza os dados normalmente
+	    cliente.setNome(clienteDto.getNome());
+	    cliente.setCpf(clienteDto.getCPF());
+	    cliente.setDataNascimento(clienteDto.getDataNascimento());
 
-		clienteAtualizar.setNome(nome);
+	    Integer idade = Period.between(clienteDto.getDataNascimento(), LocalDate.now()).getYears();
+	    if (idade < 18) {
+	        throw new IdadeInsuficienteException("Apenas maiores de idade podem criar conta");
+	    }
 
-		clienteAtualizar.setCpf(cpf);
-		if (clienteRepository.findByCpf(clienteAtualizar.getCpf()).isPresent()) {
-			throw new CpfDuplicadoException("Já existe um cliente com este CPF cadastrado.");
-		}
+	    EnderecoResponse endereco = buscarEnderecoPorCep(clienteDto.getCep());
 
-		clienteAtualizar.setIdade(idade);
-		return clienteRepository.save(clienteAtualizar);
+	    cliente.setCep(endereco.getCep());
+	    cliente.setCidade(endereco.getCidade());
+	    cliente.setEstado(endereco.getEstado());
+	    cliente.setBairro(endereco.getBairro());
+	    cliente.setRua(endereco.getRua());
+
+	    return clienteRepository.save(cliente);
 	}
 
 	public List<ClienteResponse> getAllClientes() {
@@ -136,8 +146,7 @@ public class ClienteService {
 	}
 
 	public Cliente buscarClientePorId(Long id) {
-		return clienteRepository.findById(id).orElseThrow(() -> 
-			new ObjetoNuloException("Cliente não encontrado"));
+		return clienteRepository.findById(id).orElseThrow(() -> new ObjetoNuloException("Cliente não encontrado"));
 	}
 
 	private EnderecoResponse buscarEnderecoPorCep(String cep) {
@@ -167,5 +176,45 @@ public class ClienteService {
 		return new ClienteResponse(cliente.getNome(), cliente.getCpf(), cliente.getTipoDeCliente(), cliente.getId(),
 				cliente.getIdade(), endereco, cliente.getContas());
 	}
+
+//	public Cliente atualizarTipoDeCliente(Cliente clienteAtual, String novoTipo) {
+//
+//		// se o cliente não fez nada pra mudar o tipo dele, só retorna o mesmo
+//		if (clienteAtual.getTipoDeCliente().equalsIgnoreCase(novoTipo)) {
+//			return clienteAtual;
+//		}
+//
+//		clienteRepository.deleteById(clienteAtual.getId());
+//		clienteRepository.flush(); // força a exclusão no banco
+//		entityManager.clear(); // limpa o cache do Hibernate
+//
+//		Cliente novoCliente;
+//
+//		switch (novoTipo.toLowerCase()) {
+//		case "comum":
+//			novoCliente = new ClienteComum();
+//			break;
+//		case "super":
+//			novoCliente = new ClienteSuper();
+//			break;
+//		case "premium":
+//			novoCliente = new ClientePremium();
+//			break;
+//		default:
+//			throw new IllegalArgumentException("Tipo de cliente inválido: " + novoTipo);
+//		}
+//
+//		novoCliente.setNome(clienteAtual.getNome());
+//		novoCliente.setCpf(clienteAtual.getCpf());
+//		novoCliente.setDataNascimento(clienteAtual.getDataNascimento());
+//		novoCliente.setCep(clienteAtual.getCep());
+//		novoCliente.setCidade(clienteAtual.getCidade());
+//		novoCliente.setEstado(clienteAtual.getEstado());
+//		novoCliente.setBairro(clienteAtual.getBairro());
+//		novoCliente.setRua(clienteAtual.getRua());
+//		novoCliente.setContas(clienteAtual.getContas());
+//
+//		return clienteRepository.save(novoCliente);
+//	}
 
 }

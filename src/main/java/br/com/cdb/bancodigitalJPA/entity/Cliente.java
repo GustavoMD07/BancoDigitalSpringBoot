@@ -1,5 +1,8 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
+import java.beans.Transient;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,16 +36,19 @@ public abstract class Cliente {
 	//cpf tem que ser único
 	@Column(unique = true)
 	private String cpf;
-	private Integer idade;
 	private String nome;
+	private LocalDate dataNascimento;
 	
-									//logo ao criar um atributo no Entity, ele já cria essa coluna no H2
+	
+
+	//logo ao criar um atributo no Entity, ele já cria essa coluna no H2
 	private String cep;				//isso tudo vai ser mostrado no H2, que é o nosso banco de dados
 
 	private String estado;			//o que for mostrado no Postman, vai ser o Response de cada entidade
 	private String cidade;
 	private String bairro;
 	private String rua;
+	
 	
 	public abstract double getTaxaManutencao();
 	public abstract double getTaxaRendimento();
@@ -90,12 +96,9 @@ public abstract class Cliente {
 		this.contas = contas;
 	}
 	
+	@Transient
 	public Integer getIdade() {
-		return idade;
-	}
-
-	public void setIdade(Integer idade) {
-		this.idade = idade;
+		return Period.between(this.dataNascimento, LocalDate.now()).getYears();
 	}
 	
 	@JsonProperty("tipoDeCliente")
@@ -103,6 +106,13 @@ public abstract class Cliente {
 		return this.getClass().getSimpleName().replace("Cliente", "");
 	}
 
+	public LocalDate getDataNascimento() {
+		return dataNascimento;
+	}
+	
+	public void setDataNascimento(LocalDate dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
 	
 	public String getCep() {
 		return cep;

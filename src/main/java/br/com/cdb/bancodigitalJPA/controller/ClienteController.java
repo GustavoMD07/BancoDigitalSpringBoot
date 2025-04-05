@@ -66,7 +66,7 @@ public class ClienteController {
 	@PutMapping("/atualizar/{id}")
 	public ResponseEntity<String> atualizarCliente(@PathVariable Long id,  @RequestBody @Valid ClienteDTO clienteDto) {
 		
-		Cliente clienteAtualizado = clienteService.atualizarCliente(clienteDto.getNome(), clienteDto.getCPF(), clienteDto.getDataNascimento(), id);
+		Cliente clienteAtualizado = clienteService.atualizarCliente(id, clienteDto);
 		if(clienteAtualizado != null) {
 			return new ResponseEntity<>("Cliente " + clienteDto.getNome() + " atualizado com sucesso!", HttpStatus.ACCEPTED);
 		}
