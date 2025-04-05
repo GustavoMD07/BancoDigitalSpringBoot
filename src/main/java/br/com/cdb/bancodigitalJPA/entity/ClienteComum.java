@@ -5,21 +5,36 @@ import jakarta.persistence.Entity;
 @Entity
 public class ClienteComum extends Cliente {
 
+	private double limiteCredito = 1000;
+	private double taxaRendimento = 0.005;
+	private double taxaManutencao = 12;
 	
 	
 	@Override
 	public double getTaxaManutencao() {
-		return 12.00;
+		return taxaManutencao;
 	}
 
 	@Override
 	public double getTaxaRendimento() {
-		return 0.005;
+		return taxaRendimento;
 	}
 
 	@Override
 	public double getLimiteCredito() {
-		return 1000;
+		return limiteCredito;
+	}
+	
+	public void setLimiteCredito(double limiteCredito) {
+		this.limiteCredito = limiteCredito;
+	}
+
+	public void setTaxaRendimento(double taxaRendimento) {
+		this.taxaRendimento = taxaRendimento;
+	}
+
+	public void setTaxaManutencao(double taxaManutencao) {
+		this.taxaManutencao = taxaManutencao;
 	}
 
 }
