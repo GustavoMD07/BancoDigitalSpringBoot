@@ -2,7 +2,6 @@ package br.com.cdb.bancodigitalJPA.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -37,7 +36,7 @@ public abstract class Cartao {
 	@JoinColumn(name = "conta_id")
 	@JsonBackReference
 	protected Conta conta;
-	
+
 	
 	public Long getId() {
 		return id;

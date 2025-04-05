@@ -22,7 +22,7 @@ public class ClienteResponse {
 	private Integer idade;
 	private EnderecoResponse endereco;
 	private List<Conta> contas;
-
+	
 
 	public static ClienteResponse fromEntity(Cliente cliente) {
 		ClienteResponse clienteResponse = new ClienteResponse();
