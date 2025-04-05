@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 @Entity
 public class ClienteComum extends Cliente {
 
+	
+	
 	@Override
 	public double getTaxaManutencao() {
 		return 12.00;

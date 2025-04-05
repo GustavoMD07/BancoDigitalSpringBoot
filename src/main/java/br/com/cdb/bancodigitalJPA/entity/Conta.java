@@ -5,7 +5,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,7 +19,7 @@ import jakarta.persistence.OneToMany;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "tipo_de_cartao")
+@DiscriminatorColumn(name = "tipo_de_conta")
 public abstract class Conta {							
 	
 	@Id
@@ -37,9 +36,6 @@ public abstract class Conta {
 	private Cliente cliente;
 	//esse atributo eu mapeio ele no cliente, depois passo o nome dele no Cliente
 	
-	//ele pega a discriminatória com o name, e como ele é false pra insertable e update
-	@Column(name = "tipo_de_conta", insertable = false, updatable = false)
-	private String tipoDeConta;
 
 	@OneToMany(mappedBy = "conta", fetch = FetchType.EAGER)
 	@JsonManagedReference
@@ -79,12 +75,8 @@ public abstract class Conta {
 	}
 
 	
-	@JsonProperty("tipoDeConta")		//JsonProperty garante que ele vá aparecer no PostMan
+	@JsonProperty		//JsonProperty garante que ele vá aparecer no PostMan
 	public String getTipoDeConta() {
-		return tipoDeConta;
-	} 									//se eu não tiver um getter, ele não aparece no PostMan
-
-	public void setTipoDeConta(String tipoDeConta) {
-		this.tipoDeConta = tipoDeConta;
+		return this.getClass().getSimpleName().replace("Conta", "");
 	}
 }

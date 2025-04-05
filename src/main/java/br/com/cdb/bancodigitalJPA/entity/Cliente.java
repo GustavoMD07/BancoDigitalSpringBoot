@@ -2,6 +2,8 @@ package br.com.cdb.bancodigitalJPA.entity;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -19,7 +21,7 @@ import jakarta.persistence.OneToMany;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "tipo_de_cartao")
+@DiscriminatorColumn(name = "tipo_de_cliente")
 public abstract class Cliente {
 
 	// gerando ID de forma icrementada
@@ -34,8 +36,6 @@ public abstract class Cliente {
 	private Integer idade;
 	private String nome;
 	
-	@Column(name = "tipo_de_cliente", insertable = false, updatable = false)
-	private String tipoDeCliente;
 									//logo ao criar um atributo no Entity, ele já cria essa coluna no H2
 	private String cep;				//isso tudo vai ser mostrado no H2, que é o nosso banco de dados
 
@@ -48,7 +48,7 @@ public abstract class Cliente {
 	public abstract double getTaxaRendimento();
 	public abstract double getLimiteCredito();
 	
-	@OneToMany(mappedBy = "conta", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
 	@JsonManagedReference
 	private List<Conta> contas;
 
@@ -98,13 +98,11 @@ public abstract class Cliente {
 		this.idade = idade;
 	}
 	
+	@JsonProperty("tipoDeCliente")
 	public String getTipoDeCliente() {
-		return tipoDeCliente;
+		return this.getClass().getSimpleName().replace("Cliente", "");
 	}
 
-	public void setTipoDeCliente(String tipoDeCliente) {
-		this.tipoDeCliente = tipoDeCliente;
-	}
 	
 	public String getCep() {
 		return cep;

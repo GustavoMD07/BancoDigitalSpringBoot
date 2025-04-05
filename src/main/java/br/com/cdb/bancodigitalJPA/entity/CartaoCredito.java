@@ -1,16 +1,17 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+
 
 @Entity
 public class CartaoCredito extends Cartao {
 	
 	//qualquer coisa, usa o JsonIgnore
 	//o double primitivo não tava permitindo que o objeto fosse nulo
-	@JsonIgnore
-	private Double novoLimiteCredito;
 	
 	private double limiteCredito;
 	
@@ -21,14 +22,12 @@ public class CartaoCredito extends Cartao {
 	}
 	
 	public double getLimiteCredito() {
-		if(novoLimiteCredito != null) {
-			return novoLimiteCredito;
-		}
-		return getConta().getCliente().getLimiteCredito();
+		
+		return limiteCredito;
 	}
 
-	public void setLimiteCredito(double novoLimiteCredito) {
-		this.novoLimiteCredito = novoLimiteCredito;
+	public void setLimiteCredito(double limiteCredito) {
+		this.limiteCredito = limiteCredito;
 	}
 
 	public double getFatura() {
@@ -39,8 +38,15 @@ public class CartaoCredito extends Cartao {
 		this.fatura = fatura;
 	}
 	
-	public Double getNovoLimiteCredito() {
-		return novoLimiteCredito;
-	}
+	
+	@PrePersist
+    @PreUpdate
+    //uso esse método e notações pra ele calcular o limite antes de colocar a entidade no banco
+    //assim o H2 não fica zerado
+    public void calcularLimiteAntesDeSalvar() {
+        if (this.limiteCredito == 0.0 && getConta() != null && getConta().getCliente() != null) {
+            this.limiteCredito = getConta().getCliente().getLimiteCredito();
+        }
+    }
 
 }

@@ -1,7 +1,6 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -22,9 +21,6 @@ public abstract class Cartao {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@Column(name = "tipo_de_cartao", insertable = false, updatable = false)
-	private String tipoDeCartao;
 	
 	private String senha;
 	private boolean status;
@@ -50,9 +46,8 @@ public abstract class Cartao {
 		return numCartao;
 	}
 	
-	@JsonProperty("tipoDeCartao")
 	public String getTipoDeCartao() {
-		return tipoDeCartao;
+		return this.getClass().getSimpleName().replace("Cartao", "");
 	}
 
 	public Conta getConta() {
@@ -61,10 +56,6 @@ public abstract class Cartao {
 	
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public void setTipoDeCartao(String tipoDeCartao) {
-		this.tipoDeCartao = tipoDeCartao;
 	}
 
 	public void setSenha(String senha) {
