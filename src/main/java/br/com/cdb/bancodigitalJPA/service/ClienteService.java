@@ -23,6 +23,7 @@ import br.com.cdb.bancodigitalJPA.exception.IdadeInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
+import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -38,6 +39,8 @@ public class ClienteService {
 	// quando for construido o objeto do Repository, ele vai fazer um new quando
 	@Autowired // precisar
 	private ClienteRepository clienteRepository;
+	@Autowired
+	private ContaRepository contaRepository;
 	private final RestTemplate restTemplate = new RestTemplate();
 	// RestTemplate é um "navegador", eu uso ele pra poder me comunicar com alguma
 	// API que seja externa ao meu sistemaz
@@ -99,6 +102,7 @@ public class ClienteService {
 	// que o método de erro, ele
 	public Cliente removerCliente(Long id) {
 		Cliente cliente = buscarClientePorId(id);
+		contaRepository.deleteAll(cliente.getContas());
 		clienteRepository.deleteById(id);
 		return cliente;
 	}
