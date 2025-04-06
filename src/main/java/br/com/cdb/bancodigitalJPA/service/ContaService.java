@@ -34,16 +34,13 @@ public class ContaService {
 	// a conta puxa o cliente, e o cliente puxa o ID
 
 	public Conta addConta(Conta conta) {
+		
 		// Recupera o cliente da conta
-		Optional<Cliente> clienteEncontrado = clienteRepository.findById(conta.getCliente().getId());
-
-		if (clienteEncontrado.isEmpty()) {
-			throw new ObjetoNuloException("Cliente com o ID: " + conta.getCliente().getId() + " não encontrado!");
-		}
-
-		Cliente cliente = clienteEncontrado.get();
-
-		if (cliente.getContas() != null && cliente.getContas().size() >= 2) {
+		Cliente cliente = clienteRepository.findById(conta.getCliente().getId()).
+			orElseThrow(() -> new ObjetoNuloException("Cliente com ID " + conta.getCliente().getId() + 
+					" não encontrado!"));
+		
+		if (cliente.getContas().size() >= 2) {
 			throw new QuantidadeExcedidaException("O cliente já possui duas contas");
 		}
 

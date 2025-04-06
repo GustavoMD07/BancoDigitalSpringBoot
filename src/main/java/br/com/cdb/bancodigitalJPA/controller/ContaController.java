@@ -1,10 +1,6 @@
 package br.com.cdb.bancodigitalJPA.controller;
 
-
-
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import br.com.cdb.bancodigitalJPA.DTO.ContaDTO;
-import br.com.cdb.bancodigitalJPA.entity.Cliente;
 import br.com.cdb.bancodigitalJPA.entity.Conta;
 import br.com.cdb.bancodigitalJPA.entity.ContaCorrente;
 import br.com.cdb.bancodigitalJPA.entity.ContaPoupanca;
@@ -41,11 +35,6 @@ public class ContaController {
 	
 	@PostMapping("/add")
 	public ResponseEntity<String> addConta(@RequestBody @Valid ContaDTO contaDto) {
-		Optional<Cliente> clienteProcurado = clienteRepository.findById(contaDto.getClienteId());
-		
-		if(clienteProcurado.isEmpty()) {
-			return new ResponseEntity<>("Cliente não encontrado", HttpStatus.NOT_FOUND);
-		}
 		
 		Conta conta;
 		
