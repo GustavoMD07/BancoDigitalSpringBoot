@@ -3,6 +3,7 @@ package br.com.cdb.bancodigitalJPA.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,26 +25,34 @@ public class SeguroController {
     private SeguroService seguroService;
 	
 	@PostMapping("/add")
-    public ResponseEntity<SeguroResponse> contratarSeguro(@RequestBody @Valid SeguroDTO dto) {
+    public ResponseEntity<String> contratarSeguro(@RequestBody @Valid SeguroDTO dto) {
         SeguroResponse response = seguroService.contratarSeguro(dto);
-        return ResponseEntity.ok(response);
+        
+        if(response != null) {
+        	 return new ResponseEntity<>("Seguro " + response.getTipoDeSeguro() +" contratado com sucesso!", HttpStatus.OK);
+        }
+        
+        else {
+			return new ResponseEntity<>("Seguro não foi contratado, erro", HttpStatus.NOT_ACCEPTABLE);
+		}
     }
 
     @GetMapping("/list/{id}")
-    public ResponseEntity<SeguroResponse> pegarSeguro(@PathVariable Long id) {
+    public ResponseEntity<SeguroResponse> buscarSeguroPorId(@PathVariable Long id) {
         SeguroResponse response = seguroService.buscarSeguroPorId(id);
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.FOUND);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<SeguroResponse>> listarSeguros() {
         List<SeguroResponse> lista = seguroService.listarSeguros();
-        return ResponseEntity.ok(lista);
+        return new ResponseEntity<>(lista, HttpStatus.FOUND);
     }
 
     @PutMapping("/cancelar/{id}")
-    public ResponseEntity<Void> cancelarSeguro(@PathVariable Long id) {
+    public ResponseEntity<String> cancelarSeguro(@PathVariable Long id) {
         seguroService.cancelarSeguro(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>("Seguro cancelado com sucesso, obrigado por utilizar nossos serviços.", 
+        		HttpStatus.OK);
     }
 }

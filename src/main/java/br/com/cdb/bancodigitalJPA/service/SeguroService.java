@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigitalJPA.service;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,12 +13,16 @@ import br.com.cdb.bancodigitalJPA.entity.Cartao;
 import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
 import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
 import br.com.cdb.bancodigitalJPA.entity.Seguro;
+import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
+import br.com.cdb.bancodigitalJPA.exception.StatusNegadoException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.SeguroRepository;
 
 @Service
 public class SeguroService {
 
+	private SecureRandom random = new SecureRandom();
+	
 	@Autowired
 	private SeguroRepository seguroRepository;
 
@@ -29,7 +34,7 @@ public class SeguroService {
 		Cartao cartao = cartaoService.buscarCartaoPorId(seguroDto.getCartaoId());
 		
 		if (!(cartao instanceof CartaoCredito)) {
-		    throw new RuntimeException("Seguros só podem ser aplicados a cartões de crédito!");
+		    throw new SubClasseDiferenteException("Seguros só podem ser aplicados a cartões de crédito!");
 		}
 		
 		CartaoCredito cartaoCredito = (CartaoCredito) cartao;
@@ -49,7 +54,7 @@ public class SeguroService {
 			else {
 				seguro.setValorApolice(50);
 			}
-			seguro.setDescricao("Cobertura viagem: ...");
+			seguro.setDescricao("Cobertura viagem assistência em caso de urgência médica, atrasos de voo, extravio de bagagem e etc");
 		} 
 		
 		else if (seguroDto.getTipoDeSeguro().equalsIgnoreCase("fraude")) {
@@ -69,12 +74,17 @@ public class SeguroService {
 	
 	public SeguroResponse buscarSeguroPorId(Long id) {
 	    Seguro seguro = seguroRepository.findById(id)
-	        .orElseThrow(() -> new RuntimeException("Seguro não encontrado"));
+	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado"));
+	    if(!seguro.isAtivo()) {
+	    	throw new StatusNegadoException("Seguro desativado");
+	    }
 	    return SeguroResponse.fromEntity(seguro); // com esse orElseThrow, eu não preciso criar um Optional
 	}
 
 	public List<SeguroResponse> listarSeguros() {
-	    return seguroRepository.findAll().stream().map(SeguroResponse::fromEntity).toList(); 
+	    
+		
+		return seguroRepository.findAll().stream().map(SeguroResponse::fromEntity).toList(); 
 	    
 	    //o stream "processa" todos os dados
 	    //.map converte cada seguro em seguroResponse pelo fromEntity
@@ -83,12 +93,19 @@ public class SeguroService {
 
 	public void cancelarSeguro(Long id) {
 	    Seguro seguro = seguroRepository.findById(id)
-	        .orElseThrow(() -> new RuntimeException("Seguro não encontrado"));
+	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado"));
 	    seguro.setAtivo(false);
 	    seguroRepository.save(seguro);
 	}
 
 	private String gerarNumApolice() {
-	    return "AP-" + System.currentTimeMillis();
+	    
+		String num = "";
+		
+		for(int i = 0; i < 10; i++) {
+			num += random.nextInt(9);
+		}
+		
+		return "AP-" + num;
 	}
 }

@@ -274,7 +274,7 @@ public class CartaoService {
 	public String gerarNumeroCartao() {
 		String num = "";
 
-		for (int i = 0; i < QntdsNum; i++) {
+		for (int i = 0; i < 15; i++) {
 			num += random.nextInt(9);
 		}
 		int digitoVerificador = calcularDigitoVerificador(num);

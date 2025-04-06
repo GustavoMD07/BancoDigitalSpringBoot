@@ -142,7 +142,7 @@ public class ClienteService {
 
 	public List<ClienteResponse> getAllClientes() {
 		List<Cliente> clientes = clienteRepository.findAll();
-		return clientes.stream().map(this::converter).toList();
+		return clientes.stream().map(ClienteResponse::fromEntity).toList();
 		// stream pra poder mexer na lista, map pega todos os elementos clientes e chama
 		// o método converter
 		// e o método converter, converte pra ClienteResponse.
@@ -170,14 +170,6 @@ public class ClienteService {
 		} catch (Exception e) {
 			throw new ApiBloqueadaException("Erro ao integrar com a APi" + e.getMessage());
 		}
-	}
-
-	private ClienteResponse converter(Cliente cliente) {
-		EnderecoResponse endereco = new EnderecoResponse(cliente.getCep(), cliente.getEstado(), cliente.getCidade(),
-				cliente.getRua(), cliente.getBairro());
-
-		return new ClienteResponse(cliente.getNome(), cliente.getCpf(), cliente.getTipoDeCliente(), cliente.getId(),
-				cliente.getIdade(), endereco, cliente.getContas());
 	}
 
 //	public Cliente atualizarTipoDeCliente(Cliente clienteAtual, String novoTipo) {
