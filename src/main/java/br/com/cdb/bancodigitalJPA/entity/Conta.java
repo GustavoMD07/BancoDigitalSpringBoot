@@ -39,7 +39,7 @@ public abstract class Conta {
 
 	@OneToMany(mappedBy = "conta", fetch = FetchType.EAGER)
 	@JsonManagedReference
-	private List<Cartao> cartao;
+	private List<Cartao> cartoes;
 	
 	
 	public Long getId() {
@@ -66,12 +66,12 @@ public abstract class Conta {
 		this.cliente = cliente;
 	}
 	
-	public List<Cartao> getCartao() {
-		return cartao;
+	public List<Cartao> getCartoes() {
+		return cartoes;
 	}
 
-	public void setCartao(List<Cartao> cartao) {
-		this.cartao = cartao;
+	public void setCartao(List<Cartao> cartoes) {
+		this.cartoes = cartoes;
 	}
 
 	

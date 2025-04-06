@@ -4,12 +4,10 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import br.com.cdb.bancodigitalJPA.DTO.ClienteDTO;
 import br.com.cdb.bancodigitalJPA.DTO.ClienteResponse;
 import br.com.cdb.bancodigitalJPA.DTO.EnderecoResponse;
@@ -36,12 +34,15 @@ public class ClienteService {
 	// classe do Jakarta
 
 	// com o AutoWired eu não preciso me preocupar com a criação desse objeto
-	// quando for construido o objeto do Repository, ele vai fazer um new quando
-	@Autowired // precisar
+	// quando for construido o objeto do Repository, ele vai fazer um new quando precisar
+	@Autowired
 	private ClienteRepository clienteRepository;
+	
 	@Autowired
 	private ContaRepository contaRepository;
+	
 	private final RestTemplate restTemplate = new RestTemplate();
+	
 	// RestTemplate é um "navegador", eu uso ele pra poder me comunicar com alguma
 	// API que seja externa ao meu sistemaz
 
@@ -103,6 +104,7 @@ public class ClienteService {
 	public Cliente removerCliente(Long id) {
 		Cliente cliente = buscarClientePorId(id);
 		contaRepository.deleteAll(cliente.getContas());
+		
 		clienteRepository.deleteById(id);
 		return cliente;
 	}

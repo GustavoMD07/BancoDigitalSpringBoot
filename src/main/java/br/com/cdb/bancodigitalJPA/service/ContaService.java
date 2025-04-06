@@ -14,6 +14,7 @@ import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
 import br.com.cdb.bancodigitalJPA.exception.QuantidadeExcedidaException;
 import br.com.cdb.bancodigitalJPA.exception.SaldoInsuficienteException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
+import br.com.cdb.bancodigitalJPA.repository.CartaoRepository;
 import br.com.cdb.bancodigitalJPA.repository.ClienteRepository;
 import br.com.cdb.bancodigitalJPA.repository.ContaRepository;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,9 @@ public class ContaService {
 
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private CartaoRepository cartaoRepository;
 
 	// a conta puxa o cliente, e o cliente puxa o ID
 
@@ -48,12 +52,14 @@ public class ContaService {
 	}
 
 	public Conta removerConta(Long id) {
-		Conta contaAchada = buscarContaPorId(id);
-		if (contaAchada != null) {
-			contaRepository.deleteById(id);
-			return contaAchada;
+		Conta conta = buscarContaPorId(id);
+		
+		if (conta.getCartoes() != null && !conta.getCartoes().isEmpty()) {
+			cartaoRepository.deleteAll(conta.getCartoes());
 		}
-		return null;
+		
+		contaRepository.deleteById(id);
+		return conta;
 	}
 
 	public Conta buscarContaPorId(Long id) {
