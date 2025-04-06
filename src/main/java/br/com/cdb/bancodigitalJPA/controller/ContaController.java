@@ -46,6 +46,7 @@ public class ContaController {
 		if(clienteProcurado.isEmpty()) {
 			return new ResponseEntity<>("Cliente não encontrado", HttpStatus.NOT_FOUND);
 		}
+		
 		Conta conta;
 		
 		if(contaDto.getTipoDeConta().equalsIgnoreCase("Corrente")) {
@@ -59,7 +60,6 @@ public class ContaController {
 		}
 		
 		conta.setSaldo(contaDto.getSaldo());
-		conta.setCliente(clienteProcurado.get());
 		contaService.addConta(conta);
 		return new ResponseEntity<>("Conta "+ contaDto.getTipoDeConta() +" adicionada com sucesso", 
 				HttpStatus.CREATED);

@@ -11,6 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+//Lombok
 public class ContaDTO {
 
 	@NotNull(message = "O saldo não pode ser nulo")
