@@ -5,9 +5,11 @@ package br.com.cdb.bancodigitalJPA.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 
 @Entity
+@PrimaryKeyJoinColumn(name = "idCartao")
 public class CartaoCredito extends Cartao {
 	
 	//qualquer coisa, usa o JsonIgnore

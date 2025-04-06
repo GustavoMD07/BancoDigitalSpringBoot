@@ -1,8 +1,10 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 @Entity
+@PrimaryKeyJoinColumn(name = "idCliente")
 public class ClienteComum extends Cliente {
 
 	private double limiteCredito = 1000;

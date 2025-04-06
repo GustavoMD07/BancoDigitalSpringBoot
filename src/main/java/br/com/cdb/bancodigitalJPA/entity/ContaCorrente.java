@@ -3,8 +3,10 @@ package br.com.cdb.bancodigitalJPA.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 @Entity
+@PrimaryKeyJoinColumn(name = "idConta")
 public class ContaCorrente extends Conta {
 
 	private double taxaManutencao;
