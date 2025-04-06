@@ -53,8 +53,16 @@ public class CartaoService {
 	public Cartao desativarCartao(Long id) {
 		Optional<Cartao> cartaoEncontrado = cartaoRepository.findById(id);
 		Cartao cartao = cartaoEncontrado.get();
+		
 		if(!cartao.isStatus()) {
 			throw new StatusNegadoException("Seu cartão já está desativado!");
+		}
+		
+		if(cartao instanceof CartaoCredito) {
+			CartaoCredito cartaoC = (CartaoCredito) cartao;
+			if(cartaoC.getFatura() == 0) {
+				throw new StatusNegadoException("Você não pode desativar seu cartão com uma fatura em aberto!");
+			}
 		}
 		cartao.setStatus(false);
 		return cartaoRepository.save(cartao);
