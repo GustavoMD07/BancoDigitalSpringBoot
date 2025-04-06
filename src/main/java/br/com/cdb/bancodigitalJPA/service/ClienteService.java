@@ -3,7 +3,6 @@ package br.com.cdb.bancodigitalJPA.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -143,12 +142,10 @@ public class ClienteService {
 
 	public List<ClienteResponse> getAllClientes() {
 		List<Cliente> clientes = clienteRepository.findAll();
-		return clientes.stream().map(this::converter).collect(Collectors.toList());
+		return clientes.stream().map(this::converter).toList();
 		// stream pra poder mexer na lista, map pega todos os elementos clientes e chama
 		// o método converter
-		// e o método converter, converte pra ClienteResponse. O collect cria uma nova
-		// lista de ClienteResponse
-		// e a lista é retornada
+		// e o método converter, converte pra ClienteResponse.
 	}
 
 	public Cliente buscarClientePorId(Long id) {

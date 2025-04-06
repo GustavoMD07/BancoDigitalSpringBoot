@@ -23,25 +23,25 @@ public class SeguroController {
 	@Autowired
     private SeguroService seguroService;
 	
-	@PostMapping
+	@PostMapping("/add")
     public ResponseEntity<SeguroResponse> contratarSeguro(@RequestBody @Valid SeguroDTO dto) {
         SeguroResponse response = seguroService.contratarSeguro(dto);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/list/{id}")
     public ResponseEntity<SeguroResponse> pegarSeguro(@PathVariable Long id) {
-        SeguroResponse response = seguroService.getSeguro(id);
+        SeguroResponse response = seguroService.buscarSeguroPorId(id);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    @GetMapping("/listAll")
     public ResponseEntity<List<SeguroResponse>> listarSeguros() {
         List<SeguroResponse> lista = seguroService.listarSeguros();
         return ResponseEntity.ok(lista);
     }
 
-    @PutMapping("/{id}/cancelar")
+    @PutMapping("/cancelar/{id}")
     public ResponseEntity<Void> cancelarSeguro(@PathVariable Long id) {
         seguroService.cancelarSeguro(id);
         return ResponseEntity.noContent().build();
