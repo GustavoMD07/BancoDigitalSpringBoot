@@ -1,9 +1,14 @@
 package br.com.cdb.bancodigitalJPA.entity;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,6 +16,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -32,6 +38,10 @@ public abstract class Cartao {
 	@JoinColumn(name = "conta_id")
 	@JsonBackReference
 	protected Conta conta;
+	
+	@OneToMany(mappedBy = "cartao", fetch = FetchType.EAGER)
+	@JsonManagedReference
+	private List<Seguro> seguros;
 
 	
 	public Long getId() {
@@ -76,6 +86,14 @@ public abstract class Cartao {
 
 	public void setStatus(boolean status) {
 		this.status = status;
+	}
+	
+	public List<Seguro> getSeguros() {
+		return seguros;
+	}
+
+	public void setSeguros(List<Seguro> seguros) {
+		this.seguros = seguros;
 	}
 	
 }

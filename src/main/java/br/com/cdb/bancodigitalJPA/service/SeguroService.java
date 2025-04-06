@@ -3,10 +3,8 @@ package br.com.cdb.bancodigitalJPA.service;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import br.com.cdb.bancodigitalJPA.DTO.SeguroDTO;
 import br.com.cdb.bancodigitalJPA.DTO.SeguroResponse;
 import br.com.cdb.bancodigitalJPA.entity.Cartao;
@@ -14,7 +12,6 @@ import br.com.cdb.bancodigitalJPA.entity.CartaoCredito;
 import br.com.cdb.bancodigitalJPA.entity.ClientePremium;
 import br.com.cdb.bancodigitalJPA.entity.Seguro;
 import br.com.cdb.bancodigitalJPA.exception.ObjetoNuloException;
-import br.com.cdb.bancodigitalJPA.exception.StatusNegadoException;
 import br.com.cdb.bancodigitalJPA.exception.SubClasseDiferenteException;
 import br.com.cdb.bancodigitalJPA.repository.SeguroRepository;
 
@@ -22,6 +19,7 @@ import br.com.cdb.bancodigitalJPA.repository.SeguroRepository;
 public class SeguroService {
 
 	private SecureRandom random = new SecureRandom();
+	private static final int qntd = 10;
 	
 	@Autowired
 	private SeguroRepository seguroRepository;
@@ -75,9 +73,6 @@ public class SeguroService {
 	public SeguroResponse buscarSeguroPorId(Long id) {
 	    Seguro seguro = seguroRepository.findById(id)
 	        .orElseThrow(() -> new ObjetoNuloException("Seguro não encontrado"));
-	    if(!seguro.isAtivo()) {
-	    	throw new StatusNegadoException("Seguro desativado");
-	    }
 	    return SeguroResponse.fromEntity(seguro); // com esse orElseThrow, eu não preciso criar um Optional
 	}
 
@@ -102,7 +97,7 @@ public class SeguroService {
 	    
 		String num = "";
 		
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < qntd; i++) {
 			num += random.nextInt(9);
 		}
 		

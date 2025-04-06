@@ -10,6 +10,7 @@ public class ClienteSuper extends Cliente {
 	private double limiteCredito = 5000;
 	private double taxaRendimento = 0.007;
 	private double taxaManutencao = 8;
+	private double valorSeguroViagem = 50;
 	
 	
 	@Override
@@ -37,6 +38,14 @@ public class ClienteSuper extends Cliente {
 
 	public void setTaxaManutencao(double taxaManutencao) {
 		this.taxaManutencao = taxaManutencao;
+	}
+	
+	public double getValorSeguroViagem() {
+		return valorSeguroViagem;
+	}
+
+	public void setValorSeguroViagem(double valorSeguroViagem) {
+		this.valorSeguroViagem = valorSeguroViagem;
 	}
 
 }
