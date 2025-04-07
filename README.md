@@ -81,6 +81,6 @@ Dessa forma, Qualquer erro de negócio ou validação retorna uma resposta clara
 🔹 Interface frontend (React ou Angular) para visualização dos dados  
 
 # 📌 Autor
-👨‍💻 Gustavo Matachun DOmingues
-🔗 LinkedIn | 📧 gustavomatachun.domingues@gmail.com
+👨‍💻 Gustavo Matachun Domingues
+🔗 [LinkedIn](https://www.linkedin.com/in/gustavo-matachun/) | 📧 gustavomatachun.domingues@gmail.com
 
